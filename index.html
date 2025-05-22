@@ -1,121 +1,240 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>AI Chatbot - Hugging Face</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <style>
-    body {
-      font-family: sans-serif;
-      background: #f0f0f5;
-      margin: 0;
-      padding: 2rem;
-    }
-    #chatbox {
-      max-width: 600px;
-      margin: auto;
-      background: white;
-      padding: 1rem;
-      border-radius: 10px;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-    }
-    #messages {
-      height: 400px;
-      overflow-y: auto;
-      border: 1px solid #ddd;
-      padding: 1rem;
-      border-radius: 8px;
-      margin-bottom: 1rem;
-      background: #fafaff;
-    }
-    .msg {
-      margin: 0.5rem 0;
-      word-break: break-word;
-    }
-    .user { text-align: right; color: #2166d1; }
-    .bot { text-align: left; color: #268c48; }
-    .error { color: red; text-align: center; }
-    input, button {
-      padding: 0.5rem;
-      font-size: 1rem;
-    }
-    input {
-      width: 70%;
-      box-sizing: border-box;
-    }
-    button {
-      width: 28%;
-      margin-left: 2%;
-      background: #2166d1;
-      color: white;
-      border: none;
-      border-radius: 4px;
-      transition: background 0.2s;
-    }
-    button:disabled {
-      background: #8faee5;
-      cursor: not-allowed;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yes or No Quiz Game</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        accenture: {
+                            primary: '#A100FF',
+                            dark: '#7B00C7',
+                            light: '#D9B3FF',
+                            bg: '#F5F0FF'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .message-animation { animation: fadeIn 0.3s ease-out forwards; }
+        .chat-header { background: linear-gradient(90deg, #A100FF 0%, #7B00C7 100%); }
+        .chat-container { height: calc(100vh - 120px); }
+        .messages-container::-webkit-scrollbar { width: 6px; }
+        .messages-container::-webkit-scrollbar-thumb { background: #A100FF; border-radius: 10px; }
+    </style>
 </head>
-<body>
+<body class="bg-gray-100 font-sans">
+    <div class="max-w-md mx-auto bg-white shadow-lg rounded-lg overflow-hidden h-screen flex flex-col">
+        <!-- Chat header -->
+        <div class="chat-header text-white p-4 flex items-center">
+            <div class="w-10 h-10 rounded-full bg-white flex items-center justify-center mr-3">
+                <i class="fas fa-gamepad text-accenture-primary text-xl"></i>
+            </div>
+            <div>
+                <h1 class="font-bold text-lg">Yes or No Game</h1>
+                <p class="text-xs opacity-80">Quiz Mode</p>
+            </div>
+        </div>
+        
+        <!-- Messages container -->
+        <div class="messages-container flex-1 p-4 overflow-y-auto bg-accenture-bg">
+            <div class="space-y-3" id="messages"></div>
+        </div>
+        
+        <!-- Typing indicator (hidden by default) -->
+        <div id="typing-indicator" class="hidden px-4 py-2">
+            <div class="flex items-start">
+                <div class="w-8 h-8 rounded-full bg-accenture-primary flex items-center justify-center mr-2">
+                    <i class="fas fa-robot text-white text-sm"></i>
+                </div>
+                <div class="px-4 py-2 rounded-lg bg-white shadow-sm border border-accenture-light">
+                    <p class="typing-indicator text-gray-800 relative pr-4">Thinking<span class="animate-pulse">...</span></p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Input area -->
+        <div class="border-t border-gray-200 p-3 bg-white">
+            <div class="flex items-center">
+                <div class="flex-1 relative">
+                    <input 
+                        type="text" 
+                        id="message-input" 
+                        placeholder="Type Yes or No..." 
+                        class="w-full py-2 px-4 rounded-full bg-gray-100 focus:outline-none focus:ring-2 focus:ring-accenture-primary focus:bg-white"
+                        autocomplete="off"
+                    >
+                </div>
+                <button id="send-button" class="ml-3 w-10 h-10 rounded-full bg-accenture-primary text-white flex items-center justify-center hover:bg-accenture-dark">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+    </div>
 
-<div id="chatbox">
-  <h2>🤖 HuggingFace AI Chat</h2>
-  <div id="messages" aria-live="polite"></div>
-  <form id="chat-form" autocomplete="off" onsubmit="event.preventDefault(); send();">
-    <input type="text" id="input" placeholder="Ask me anything..." autofocus autocomplete="off" />
-    <button type="submit" id="sendBtn">Send</button>
-  </form>
-</div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const messageInput = document.getElementById('message-input');
+            const sendButton = document.getElementById('send-button');
+            const messagesContainer = document.getElementById('messages');
+            const typingIndicator = document.getElementById('typing-indicator');
 
-<script>
-  // Your backend endpoint
-  const BACKEND_URL = "https://b908c825-257a-46a0-9180-eca8a2395603-00-2cdqr5vnxycpd.spock.replit.dev/chat";
+            // Yes/No Questions Database
+            const questions = [
+                { q: "Is the sky blue?", a: "yes" },
+                { q: "Does 2 + 2 equal 5?", a: "no" },
+                { q: "Is Python a programming language?", a: "yes" },
+                { q: "Is the earth flat?", a: "no" },
+                { q: "Is pizza a fruit?", a: "no" },
+                { q: "Can humans breathe underwater unaided?", a: "no" },
+                { q: "Do birds fly?", a: "yes" },
+                { q: "Is water wet?", a: "yes" },
+                { q: "Is summer colder than winter?", a: "no" },
+                { q: "Is fire hot?", a: "yes" },
+                // Add more as you like!
+            ];
+            let usedQuestions = [];
+            let score = 0;
+            let turn = 0;
+            let totalQuestions = 5; // Number of questions per game
+            let gameActive = true;
 
-  const messages = document.getElementById("messages");
-  const input = document.getElementById("input");
-  const sendBtn = document.getElementById("sendBtn");
+            function addMessage(text, isUser = false) {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `flex items-start ${isUser ? 'justify-end' : ''} message-animation`;
+                if (!isUser) {
+                    messageDiv.innerHTML = `
+                        <div class="w-8 h-8 rounded-full bg-accenture-primary flex items-center justify-center mr-2">
+                            <i class="fas fa-robot text-white text-sm"></i>
+                        </div>
+                        <div class="max-w-xs lg:max-w-md px-4 py-2 rounded-lg bg-white shadow-sm border border-accenture-light">
+                            <p class="text-gray-800">${text}</p>
+                            <p class="text-xs text-gray-500 mt-1">${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</p>
+                        </div>
+                    `;
+                } else {
+                    messageDiv.innerHTML = `
+                        <div class="max-w-xs lg:max-w-md px-4 py-2 rounded-lg bg-accenture-primary text-white shadow-sm">
+                            <p>${text}</p>
+                            <p class="text-xs text-accenture-light mt-1">${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</p>
+                        </div>
+                    `;
+                }
+                messagesContainer.appendChild(messageDiv);
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            }
 
-  function appendMessage(role, text) {
-    const msg = document.createElement("div");
-    msg.className = `msg ${role}`;
-    msg.textContent = text;
-    messages.appendChild(msg);
-    messages.scrollTop = messages.scrollHeight;
-  }
+            function showTyping() {
+                typingIndicator.classList.remove('hidden');
+                messagesContainer.appendChild(typingIndicator);
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            }
 
-  function appendError(text) {
-    const msg = document.createElement("div");
-    msg.className = "msg error";
-    msg.textContent = text;
-    messages.appendChild(msg);
-    messages.scrollTop = messages.scrollHeight;
-  }
+            function hideTyping() {
+                typingIndicator.classList.add('hidden');
+            }
 
-  async function send() {
-    const userMessage = input.value.trim();
-    if (!userMessage) return;
+            // Start/Restart the game
+            function startGame() {
+                usedQuestions = [];
+                score = 0;
+                turn = 0;
+                gameActive = true;
+                messagesContainer.innerHTML = '';
+                addMessage("Welcome to the Yes or No Game! You will be asked 5 questions. Answer with Yes or No. Let's begin!");
+                setTimeout(() => askQuestion(), 1500);
+            }
 
-    appendMessage("user", userMessage);
-    input.value = "";
-    input.focus();
+            function askQuestion() {
+                if (turn >= totalQuestions) {
+                    endGame();
+                    return;
+                }
+                let idx;
+                do {
+                    idx = Math.floor(Math.random() * questions.length);
+                } while (usedQuestions.includes(idx));
+                usedQuestions.push(idx);
+                turn++;
+                setTimeout(() => {
+                    addMessage(`Question ${turn}: ${questions[idx].q}`);
+                    messageInput.disabled = false;
+                    messageInput.focus();
+                }, 600);
+                messageInput.dataset.correct = questions[idx].a;
+            }
 
-    appendMessage("bot", "Typing...");
-    sendBtn.disabled = true;
-    sendBtn.textContent = "Sending...";
+            function handleUserAnswer(userInput) {
+                if (!gameActive) return;
+                const answer = userInput.trim().toLowerCase();
+                const correct = messageInput.dataset.correct;
+                if (answer !== "yes" && answer !== "no") {
+                    addMessage("Please answer only 'Yes' or 'No'.", false);
+                    return;
+                }
+                addMessage(userInput, true);
+                showTyping();
+                setTimeout(() => {
+                    hideTyping();
+                    if (answer === correct) {
+                        score++;
+                        addMessage("Correct!", false);
+                    } else {
+                        addMessage(`Oops! The correct answer was "${correct.charAt(0).toUpperCase() + correct.slice(1)}".`, false);
+                    }
+                    askQuestion();
+                }, 900);
+            }
 
-    try {
-      const response = await fetch(BACKEND_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ input: userMessage })
-      });
+            function endGame() {
+                gameActive = false;
+                setTimeout(() => {
+                    addMessage(`Game over! Your score: ${score}/${totalQuestions}.`);
+                    setTimeout(() => {
+                        addMessage('Type "restart" to play again!', false);
+                    }, 800);
+                }, 800);
+            }
 
-      const data = await response.json();
+            // Event listeners
+            sendButton.addEventListener('click', function() {
+                const message = messageInput.value.trim();
+                if (!message) return;
+                if (!gameActive && message.toLowerCase() === "restart") {
+                    startGame();
+                } else if (gameActive) {
+                    handleUserAnswer(message);
+                }
+                messageInput.value = '';
+            });
 
-      // Remove "Typing..." message
-      messages.lastChild.remove();
+            messageInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    const message = messageInput.value.trim();
+                    if (!message) return;
+                    if (!gameActive && message.toLowerCase() === "restart") {
+                        startGame();
+                    } else if (gameActive) {
+                        handleUserAnswer(message);
+                    }
+                    messageInput.value = '';
+                }
+            });
 
-      if
-
+            // Start game on load
+            startGame();
+        });
+    </script>
+</body>
+</html>

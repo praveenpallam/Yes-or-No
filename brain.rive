@@ -1,0 +1,22 @@
+! version = 2.0
+
++ hello
+- Hello there! Ready to play a game? (yes/no)
+
++ yes
+- Great! Type **riddle** for a riddle, **hangman** for hangman, or **quit** to exit.
+
++ riddle
+- Here’s your riddle: I speak without a mouth and hear without ears. What am I?
+
++ echo
+- 🎉 Correct! Want another? (yes/no)
+
++ hangman
+- Hangman isn’t implemented yet, but stay tuned! Try **riddle** again or **quit**.
+
++ quit
+- Goodbye! Come back soon.
+
++ *
+- Sorry, I didn’t get that. Try **riddle**, **hangman**, or **quit**.

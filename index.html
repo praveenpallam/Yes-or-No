@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Yes or No Quiz Game</title>
+    <title>Game Center</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -15,7 +15,38 @@
                             dark: '#7B00C7',
                             light: '#D9B3FF',
                             bg: '#F5F0FF'
+                        },
+                        racing: {
+                            primary: '#FF5E00',
+                            dark: '#CC4B00',
+                            light: '#FFB38A',
+                            bg: '#FFF5F0'
                         }
+                    },
+                    keyframes: {
+                        'fade-in': {
+                            '0%': { opacity: '0', transform: 'translateY(10px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' }
+                        },
+                        'bounce': {
+                            '0%, 100%': { transform: 'translateY(-5%)' },
+                            '50%': { transform: 'translateY(0)' }
+                        },
+                        'pulse': {
+                            '0%, 100%': { opacity: '1' },
+                            '50%': { opacity: '0.5' }
+                        },
+                        'shake': {
+                            '0%, 100%': { transform: 'translateX(0)' },
+                            '10%, 30%, 50%, 70%, 90%': { transform: 'translateX(-5px)' },
+                            '20%, 40%, 60%, 80%': { transform: 'translateX(5px)' }
+                        }
+                    },
+                    animation: {
+                        'fade-in': 'fade-in 0.3s ease-out forwards',
+                        'bounce': 'bounce 1s infinite',
+                        'pulse': 'pulse 1.5s infinite',
+                        'shake': 'shake 0.5s'
                     }
                 }
             }
@@ -23,35 +54,157 @@
     </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+        .game-header {
+            background: linear-gradient(90deg, var(--tw-gradient-from) 0%, var(--tw-gradient-to) 100%);
         }
-        .message-animation { animation: fadeIn 0.3s ease-out forwards; }
-        .chat-header { background: linear-gradient(90deg, #A100FF 0%, #7B00C7 100%); }
-        .chat-container { height: calc(100vh - 120px); }
-        .messages-container::-webkit-scrollbar { width: 6px; }
-        .messages-container::-webkit-scrollbar-thumb { background: #A100FF; border-radius: 10px; }
+        .messages-container::-webkit-scrollbar {
+            width: 6px;
+        }
+        .messages-container::-webkit-scrollbar-thumb {
+            background: #A100FF;
+            border-radius: 10px;
+        }
+        .score-bar {
+            height: 6px;
+            transition: width 0.5s ease;
+        }
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            opacity: 0;
+        }
+        @keyframes confetti-fall {
+            0% {
+                transform: translateY(-100vh) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+        #road {
+            position: relative;
+            width: 300px;
+            height: 400px;
+            background-color: #333;
+            overflow: hidden;
+            margin: 0 auto;
+            border-radius: 10px;
+        }
+        .car {
+            position: absolute;
+            width: 40px;
+            height: 70px;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            z-index: 10;
+        }
+        .obstacle {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            background-color: red;
+            border-radius: 5px;
+            z-index: 5;
+        }
+        .lane {
+            position: absolute;
+            width: 10px;
+            height: 60px;
+            background-color: yellow;
+        }
+        .game-btn {
+            transition: all 0.2s;
+        }
+        .game-btn:active {
+            transform: scale(0.95);
+        }
     </style>
 </head>
 <body class="bg-gray-100 font-sans">
-    <div class="max-w-md mx-auto bg-white shadow-lg rounded-lg overflow-hidden h-screen flex flex-col">
-        <!-- Chat header -->
-        <div class="chat-header text-white p-4 flex items-center">
+    <!-- Home Screen -->
+    <div id="home-screen" class="max-w-md mx-auto min-h-screen flex flex-col">
+        <div class="p-6 flex-1 flex flex-col justify-center">
+            <div class="text-center mb-8">
+                <div class="w-20 h-20 rounded-full bg-accenture-primary mx-auto flex items-center justify-center mb-4 animate-bounce">
+                    <i class="fas fa-gamepad text-white text-3xl"></i>
+                </div>
+                <h1 class="text-3xl font-bold text-gray-800 mb-2">Game Center</h1>
+                <p class="text-gray-600">Choose your game adventure!</p>
+            </div>
+            
+            <div class="space-y-4">
+                <div 
+                    id="yes-no-game-btn" 
+                    class="bg-white p-4 rounded-xl shadow-md flex items-center cursor-pointer hover:shadow-lg transition-shadow"
+                    onclick="loadGame('yes-no')"
+                >
+                    <div class="w-12 h-12 rounded-lg bg-accenture-primary flex items-center justify-center mr-4">
+                        <i class="fas fa-question text-white text-xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-gray-800">Yes or No Quiz</h3>
+                        <p class="text-sm text-gray-600">Test your knowledge with simple questions</p>
+                    </div>
+                    <div class="ml-auto">
+                        <i class="fas fa-chevron-right text-gray-400"></i>
+                    </div>
+                </div>
+                
+                <div 
+                    id="car-game-btn" 
+                    class="bg-white p-4 rounded-xl shadow-md flex items-center cursor-pointer hover:shadow-lg transition-shadow"
+                    onclick="loadGame('car')"
+                >
+                    <div class="w-12 h-12 rounded-lg bg-racing-primary flex items-center justify-center mr-4">
+                        <i class="fas fa-car text-white text-xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-gray-800">Speed Racer</h3>
+                        <p class="text-sm text-gray-600">Dodge obstacles in this fast-paced game</p>
+                    </div>
+                    <div class="ml-auto">
+                        <i class="fas fa-chevron-right text-gray-400"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="p-4 text-center text-gray-500 text-sm">
+            <p>Game Center © 2023</p>
+        </div>
+    </div>
+    
+    <!-- Yes/No Game Screen -->
+    <div id="yes-no-game" class="max-w-md mx-auto bg-white shadow-lg rounded-lg overflow-hidden h-screen flex flex-col hidden">
+        <!-- Chat header with score indicator -->
+        <div class="game-header text-white p-4 flex items-center relative from-accenture-primary to-accenture-dark">
+            <button 
+                id="back-btn-yesno" 
+                class="mr-3 w-8 h-8 rounded-full bg-white/20 text-white flex items-center justify-center hover:bg-white/30 transition-colors"
+            >
+                <i class="fas fa-arrow-left"></i>
+            </button>
             <div class="w-10 h-10 rounded-full bg-white flex items-center justify-center mr-3">
-                <i class="fas fa-gamepad text-accenture-primary text-xl"></i>
+                <i class="fas fa-question text-accenture-primary text-xl"></i>
             </div>
             <div>
-                <h1 class="font-bold text-lg">Yes or No Game</h1>
-                <p class="text-xs opacity-80">Quiz Mode</p>
+                <h1 class="font-bold text-lg">Yes or No</h1>
+                <p class="text-xs opacity-80">Score: <span id="score-display">0</span>/<span id="total-questions">5</span></p>
+            </div>
+            <div class="absolute bottom-0 left-0 right-0">
+                <div id="score-bar" class="score-bar bg-accenture-primary" style="width: 0%"></div>
             </div>
         </div>
         
         <!-- Messages container -->
-        <div class="messages-container flex-1 p-4 overflow-y-auto bg-accenture-bg">
+        <div class="messages-container flex-1 p-4 overflow-y-auto bg-accenture-bg relative" id="messages-container">
             <div class="space-y-3" id="messages"></div>
         </div>
-        
+
         <!-- Typing indicator (hidden by default) -->
         <div id="typing-indicator" class="hidden px-4 py-2">
             <div class="flex items-start">
@@ -59,11 +212,11 @@
                     <i class="fas fa-robot text-white text-sm"></i>
                 </div>
                 <div class="px-4 py-2 rounded-lg bg-white shadow-sm border border-accenture-light">
-                    <p class="typing-indicator text-gray-800 relative pr-4">Thinking<span class="animate-pulse">...</span></p>
+                    <p class="text-gray-800 relative pr-4">Thinking<span class="animate-pulse">...</span></p>
                 </div>
             </div>
         </div>
-        
+
         <!-- Input area -->
         <div class="border-t border-gray-200 p-3 bg-white">
             <div class="flex items-center">
@@ -72,23 +225,172 @@
                         type="text" 
                         id="message-input" 
                         placeholder="Type Yes or No..." 
-                        class="w-full py-2 px-4 rounded-full bg-gray-100 focus:outline-none focus:ring-2 focus:ring-accenture-primary focus:bg-white"
+                        class="w-full py-2 px-4 rounded-full bg-gray-100 focus:outline-none focus:ring-2 focus:ring-accenture-primary focus:bg-white transition-all duration-200"
                         autocomplete="off"
                     >
                 </div>
-                <button id="send-button" class="ml-3 w-10 h-10 rounded-full bg-accenture-primary text-white flex items-center justify-center hover:bg-accenture-dark">
+                <button id="send-button" class="ml-3 w-10 h-10 rounded-full bg-accenture-primary text-white flex items-center justify-center hover:bg-accenture-dark transition-colors duration-200">
                     <i class="fas fa-paper-plane"></i>
                 </button>
             </div>
+            <div class="flex justify-center mt-2 space-x-2">
+                <button id="yes-btn" class="px-4 py-1 bg-green-500 text-white rounded-full text-sm hover:bg-green-600 transition-colors duration-200 game-btn">Yes</button>
+                <button id="no-btn" class="px-4 py-1 bg-red-500 text-white rounded-full text-sm hover:bg-red-600 transition-colors duration-200 game-btn">No</button>
+                <button id="restart-btn" class="px-4 py-1 bg-blue-500 text-white rounded-full text-sm hover:bg-blue-600 transition-colors duration-200 game-btn hidden">Restart</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Car Game Screen -->
+    <div id="car-game" class="max-w-md mx-auto bg-white shadow-lg rounded-lg overflow-hidden h-screen flex flex-col hidden">
+        <!-- Game header -->
+        <div class="game-header text-white p-4 flex items-center relative from-racing-primary to-racing-dark">
+            <button 
+                id="back-btn-car" 
+                class="mr-3 w-8 h-8 rounded-full bg-white/20 text-white flex items-center justify-center hover:bg-white/30 transition-colors"
+            >
+                <i class="fas fa-arrow-left"></i>
+            </button>
+            <div class="w-10 h-10 rounded-full bg-white flex items-center justify-center mr-3">
+                <i class="fas fa-car text-racing-primary text-xl"></i>
+            </div>
+            <div>
+                <h1 class="font-bold text-lg">Speed Racer</h1>
+                <p class="text-xs opacity-80">Score: <span id="car-score">0</span></p>
+            </div>
+            <div class="ml-auto flex items-center">
+                <div class="mr-4">
+                    <p class="text-xs opacity-80">High Score: <span id="high-score">0</span></p>
+                </div>
+                <button 
+                    id="pause-btn" 
+                    class="w-8 h-8 rounded-full bg-white/20 text-white flex items-center justify-center hover:bg-white/30 transition-colors"
+                >
+                    <i class="fas fa-pause"></i>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Game area -->
+        <div class="flex-1 bg-racing-bg p-4 flex flex-col items-center justify-center">
+            <div id="road" class="relative mb-4">
+                <!-- Lanes will be added here -->
+                <!-- Player car will be added here -->
+                <!-- Obstacles will be added here -->
+            </div>
+            
+            <div id="game-over" class="hidden text-center bg-white p-6 rounded-xl shadow-lg max-w-xs">
+                <h3 class="text-xl font-bold text-gray-800 mb-2">Game Over!</h3>
+                <p class="text-gray-600 mb-4">Your score: <span id="final-score">0</span></p>
+                <button 
+                    id="restart-car-btn" 
+                    class="px-4 py-2 bg-racing-primary text-white rounded-full hover:bg-racing-dark transition-colors w-full game-btn"
+                >
+                    Play Again
+                </button>
+            </div>
+            
+            <div id="start-screen" class="text-center bg-white p-6 rounded-xl shadow-lg max-w-xs">
+                <h3 class="text-xl font-bold text-gray-800 mb-4">Speed Racer</h3>
+                <p class="text-gray-600 mb-4">Dodge the red obstacles using the arrow keys or buttons below</p>
+                <button 
+                    id="start-btn" 
+                    class="px-4 py-2 bg-racing-primary text-white rounded-full hover:bg-racing-dark transition-colors w-full game-btn"
+                >
+                    Start Game
+                </button>
+            </div>
+            
+            <div id="pause-screen" class="hidden text-center bg-white p-6 rounded-xl shadow-lg max-w-xs">
+                <h3 class="text-xl font-bold text-gray-800 mb-4">Game Paused</h3>
+                <button 
+                    id="resume-btn" 
+                    class="px-4 py-2 bg-racing-primary text-white rounded-full hover:bg-racing-dark transition-colors w-full game-btn mb-2"
+                >
+                    Resume
+                </button>
+                <button 
+                    id="restart-from-pause-btn" 
+                    class="px-4 py-2 bg-gray-500 text-white rounded-full hover:bg-gray-600 transition-colors w-full game-btn"
+                >
+                    Restart
+                </button>
+            </div>
+        </div>
+        
+        <!-- Controls -->
+        <div class="border-t border-gray-200 p-4 bg-white">
+            <div class="flex justify-center space-x-4 mb-2">
+                <button id="left-btn" class="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center game-btn">
+                    <i class="fas fa-arrow-left text-gray-700"></i>
+                </button>
+                <button id="up-btn" class="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center game-btn">
+                    <i class="fas fa-arrow-up text-gray-700"></i>
+                </button>
+                <button id="down-btn" class="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center game-btn">
+                    <i class="fas fa-arrow-down text-gray-700"></i>
+                </button>
+                <button id="right-btn" class="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center game-btn">
+                    <i class="fas fa-arrow-right text-gray-700"></i>
+                </button>
+            </div>
+            <p class="text-center text-xs text-gray-500">Use arrow keys or buttons to control the car</p>
         </div>
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        // Global variables
+        let currentScreen = 'home';
+        
+        // DOM elements
+        const homeScreen = document.getElementById('home-screen');
+        const yesNoGame = document.getElementById('yes-no-game');
+        const carGame = document.getElementById('car-game');
+        
+        // Navigation functions
+        function showScreen(screen) {
+            homeScreen.classList.add('hidden');
+            yesNoGame.classList.add('hidden');
+            carGame.classList.add('hidden');
+            
+            currentScreen = screen;
+            
+            if (screen === 'home') {
+                homeScreen.classList.remove('hidden');
+            } else if (screen === 'yes-no') {
+                yesNoGame.classList.remove('hidden');
+                initYesNoGame();
+            } else if (screen === 'car') {
+                carGame.classList.remove('hidden');
+                initCarGame();
+            }
+        }
+        
+        function loadGame(game) {
+            if (game === 'yes-no') {
+                showScreen('yes-no');
+            } else if (game === 'car') {
+                showScreen('car');
+            }
+        }
+        
+        // Back buttons
+        document.getElementById('back-btn-yesno').addEventListener('click', () => showScreen('home'));
+        document.getElementById('back-btn-car').addEventListener('click', () => showScreen('home'));
+        
+        // Initialize Yes/No Game
+        function initYesNoGame() {
             const messageInput = document.getElementById('message-input');
             const sendButton = document.getElementById('send-button');
             const messagesContainer = document.getElementById('messages');
             const typingIndicator = document.getElementById('typing-indicator');
+            const scoreDisplay = document.getElementById('score-display');
+            const totalQuestionsDisplay = document.getElementById('total-questions');
+            const scoreBar = document.getElementById('score-bar');
+            const yesBtn = document.getElementById('yes-btn');
+            const noBtn = document.getElementById('no-btn');
+            const restartBtn = document.getElementById('restart-btn');
+            const messagesContainerDiv = document.getElementById('messages-container');
 
             // Yes/No Questions Database
             const questions = [
@@ -102,17 +404,40 @@
                 { q: "Is water wet?", a: "yes" },
                 { q: "Is summer colder than winter?", a: "no" },
                 { q: "Is fire hot?", a: "yes" },
-                // Add more as you like!
+                { q: "Is the moon made of cheese?", a: "no" },
+                { q: "Is chocolate bad for dogs?", a: "yes" },
+                { q: "Is the sun a star?", a: "yes" },
+                { q: "Can penguins fly?", a: "no" },
+                { q: "Is the capital of France London?", a: "no" }
             ];
+            
             let usedQuestions = [];
             let score = 0;
             let turn = 0;
-            let totalQuestions = 5; // Number of questions per game
+            let totalQuestions = 5;
             let gameActive = true;
+
+            function createConfetti() {
+                for (let i = 0; i < 50; i++) {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.left = Math.random() * 100 + '%';
+                    confetti.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 50%)`;
+                    confetti.style.animation = `confetti-fall ${Math.random() * 3 + 2}s linear forwards`;
+                    confetti.style.animationDelay = Math.random() * 0.5 + 's';
+                    messagesContainerDiv.appendChild(confetti);
+                }
+                
+                setTimeout(() => {
+                    const confettiElements = document.querySelectorAll('.confetti');
+                    confettiElements.forEach(el => el.remove());
+                }, 5000);
+            }
 
             function addMessage(text, isUser = false) {
                 const messageDiv = document.createElement('div');
-                messageDiv.className = `flex items-start ${isUser ? 'justify-end' : ''} message-animation`;
+                messageDiv.className = `flex items-start ${isUser ? 'justify-end' : ''} animate-fade-in`;
+                
                 if (!isUser) {
                     messageDiv.innerHTML = `
                         <div class="w-8 h-8 rounded-full bg-accenture-primary flex items-center justify-center mr-2">
@@ -131,6 +456,7 @@
                         </div>
                     `;
                 }
+                
                 messagesContainer.appendChild(messageDiv);
                 messagesContainer.scrollTop = messagesContainer.scrollHeight;
             }
@@ -145,6 +471,12 @@
                 typingIndicator.classList.add('hidden');
             }
 
+            function updateScoreDisplay() {
+                scoreDisplay.textContent = score;
+                const percentage = (score / totalQuestions) * 100;
+                scoreBar.style.width = `${percentage}%`;
+            }
+
             // Start/Restart the game
             function startGame() {
                 usedQuestions = [];
@@ -152,8 +484,20 @@
                 turn = 0;
                 gameActive = true;
                 messagesContainer.innerHTML = '';
-                addMessage("Welcome to the Yes or No Game! You will be asked 5 questions. Answer with Yes or No. Let's begin!");
-                setTimeout(() => askQuestion(), 1500);
+                restartBtn.classList.add('hidden');
+                yesBtn.classList.remove('hidden');
+                noBtn.classList.remove('hidden');
+                totalQuestionsDisplay.textContent = totalQuestions;
+                updateScoreDisplay();
+                
+                addMessage("Welcome to the Yes or No Game! 🤖", false);
+                setTimeout(() => {
+                    addMessage(`You will be asked ${totalQuestions} questions. Answer with "Yes" or "No".`, false);
+                    setTimeout(() => {
+                        addMessage("Let's begin! 🎮", false);
+                        setTimeout(() => askQuestion(), 800);
+                    }, 800);
+                }, 800);
             }
 
             function askQuestion() {
@@ -161,48 +505,86 @@
                     endGame();
                     return;
                 }
+                
                 let idx;
                 do {
                     idx = Math.floor(Math.random() * questions.length);
-                } while (usedQuestions.includes(idx));
+                } while (usedQuestions.includes(idx) && usedQuestions.length < questions.length);
+                
                 usedQuestions.push(idx);
                 turn++;
+                
                 setTimeout(() => {
-                    addMessage(`Question ${turn}: ${questions[idx].q}`);
+                    addMessage(`Question ${turn}: ${questions[idx].q}`, false);
                     messageInput.disabled = false;
                     messageInput.focus();
                 }, 600);
+                
                 messageInput.dataset.correct = questions[idx].a;
             }
 
             function handleUserAnswer(userInput) {
                 if (!gameActive) return;
+                
                 const answer = userInput.trim().toLowerCase();
                 const correct = messageInput.dataset.correct;
+                
                 if (answer !== "yes" && answer !== "no") {
                     addMessage("Please answer only 'Yes' or 'No'.", false);
                     return;
                 }
-                addMessage(userInput, true);
+                
+                addMessage(userInput.charAt(0).toUpperCase() + userInput.slice(1), true);
                 showTyping();
+                
                 setTimeout(() => {
                     hideTyping();
+                    
                     if (answer === correct) {
                         score++;
-                        addMessage("Correct!", false);
+                        updateScoreDisplay();
+                        addMessage("✅ Correct! Well done!", false);
+                        
+                        // Small celebration for correct answers
+                        if (score === totalQuestions) {
+                            setTimeout(() => {
+                                addMessage("🎉 Perfect score! Amazing!", false);
+                                createConfetti();
+                            }, 800);
+                        }
                     } else {
-                        addMessage(`Oops! The correct answer was "${correct.charAt(0).toUpperCase() + correct.slice(1)}".`, false);
+                        addMessage(`❌ Oops! The correct answer was "${correct.charAt(0).toUpperCase() + correct.slice(1)}".`, false);
                     }
+                    
                     askQuestion();
                 }, 900);
             }
 
             function endGame() {
                 gameActive = false;
+                messageInput.disabled = true;
+                yesBtn.classList.add('hidden');
+                noBtn.classList.add('hidden');
+                restartBtn.classList.remove('hidden');
+                
                 setTimeout(() => {
-                    addMessage(`Game over! Your score: ${score}/${totalQuestions}.`);
+                    const percentage = (score / totalQuestions) * 100;
+                    let message;
+                    
+                    if (percentage === 100) {
+                        message = `🏆 Perfect score! ${score}/${totalQuestions}! You're amazing!`;
+                        createConfetti();
+                    } else if (percentage >= 80) {
+                        message = `🎉 Great job! You scored ${score}/${totalQuestions}!`;
+                    } else if (percentage >= 50) {
+                        message = `👍 Good effort! You got ${score}/${totalQuestions}.`;
+                    } else {
+                        message = `🤔 You scored ${score}/${totalQuestions}. Try again to improve!`;
+                    }
+                    
+                    addMessage(message, false);
                     setTimeout(() => {
-                        addMessage('Type "restart" to play again!', false);
+                        addMessage('Click "Restart" to play again!', false);
                     }, 800);
                 }, 800);
             }
@@ -211,11 +593,13 @@
             sendButton.addEventListener('click', function() {
                 const message = messageInput.value.trim();
                 if (!message) return;
+                
                 if (!gameActive && message.toLowerCase() === "restart") {
                     startGame();
                 } else if (gameActive) {
                     handleUserAnswer(message);
                 }
+                
                 messageInput.value = '';
             });
 
@@ -223,18 +607,338 @@
                 if (e.key === 'Enter') {
                     const message = messageInput.value.trim();
                     if (!message) return;
+                    
                     if (!gameActive && message.toLowerCase() === "restart") {
                         startGame();
                     } else if (gameActive) {
                         handleUserAnswer(message);
                     }
+                    
                     messageInput.value = '';
                 }
             });
 
-            // Start game on load
+            yesBtn.addEventListener('click', () => {
+                if (gameActive) {
+                    handleUserAnswer('yes');
+                }
+            });
+
+            noBtn.addEventListener('click', () => {
+                if (gameActive) {
+                    handleUserAnswer('no');
+                }
+            });
+
+            restartBtn.addEventListener('click', startGame);
+
+            // Start game
             startGame();
-        });
+        }
+        
+        // Initialize Car Game
+        function initCarGame() {
+            // DOM elements
+            const road = document.getElementById('road');
+            const carScore = document.getElementById('car-score');
+            const highScoreDisplay = document.getElementById('high-score');
+            const finalScore = document.getElementById('final-score');
+            const startScreen = document.getElementById('start-screen');
+            const gameOverScreen = document.getElementById('game-over');
+            const pauseScreen = document.getElementById('pause-screen');
+            const startBtn = document.getElementById('start-btn');
+            const restartCarBtn = document.getElementById('restart-car-btn');
+            const resumeBtn = document.getElementById('resume-btn');
+            const restartFromPauseBtn = document.getElementById('restart-from-pause-btn');
+            const leftBtn = document.getElementById('left-btn');
+            const rightBtn = document.getElementById('right-btn');
+            const upBtn = document.getElementById('up-btn');
+            const downBtn = document.getElementById('down-btn');
+            const pauseBtn = document.getElementById('pause-btn');
+            
+            // Game variables
+            let playerCar;
+            let obstacles = [];
+            let lanes = [];
+            let score = 0;
+            let highScore = localStorage.getItem('carGameHighScore') || 0;
+            let gameInterval;
+            let obstacleInterval;
+            let speed = 2;
+            let gameRunning = false;
+            let gamePaused = false;
+            
+            // Initialize display
+            highScoreDisplay.textContent = highScore;
+            startScreen.classList.remove('hidden');
+            gameOverScreen.classList.add('hidden');
+            pauseScreen.classList.add('hidden');
+            
+            // Create player car
+            function createPlayerCar() {
+                playerCar = document.createElement('div');
+                playerCar.className = 'car';
+                playerCar.id = 'player-car';
+                playerCar.style.left = '130px';
+                playerCar.style.bottom = '20px';
+                playerCar.style.backgroundImage = 'url("https://cdn-icons-png.flaticon.com/512/744/744465.png")';
+                road.appendChild(playerCar);
+            }
+            
+            // Create lanes
+            function createLanes() {
+                // Clear existing lanes
+                lanes.forEach(lane => lane.remove());
+                lanes = [];
+                
+                // Create new lanes
+                for (let i = 0; i < 5; i++) {
+                    const lane1 = document.createElement('div');
+                    lane1.className = 'lane';
+                    lane1.style.left = '95px';
+                    lane1.style.top = `${-60 * i}px`;
+                    road.appendChild(lane1);
+                    lanes.push(lane1);
+                    
+                    const lane2 = document.createElement('div');
+                    lane2.className = 'lane';
+                    lane2.style.left = '195px';
+                    lane2.style.top = `${-60 * i}px`;
+                    road.appendChild(lane2);
+                    lanes.push(lane2);
+                }
+            }
+            
+            // Move lanes
+            function moveLanes() {
+                lanes.forEach(lane => {
+                    const currentTop = parseInt(lane.style.top);
+                    lane.style.top = `${currentTop + speed}px`;
+                    
+                    // Reset lane position when it goes off screen
+                    if (currentTop > 400) {
+                        lane.style.top = '-60px';
+                    }
+                });
+            }
+            
+            // Create obstacle
+            function createObstacle() {
+                const obstacle = document.createElement('div');
+                obstacle.className = 'obstacle';
+                
+                // Random lane (left, middle, right)
+                const lanes = [70, 130, 190];
+                const randomLane = lanes[Math.floor(Math.random() * lanes.length)];
+                
+                obstacle.style.left = `${randomLane}px`;
+                obstacle.style.top = '-40px';
+                obstacle.id = `obstacle-${Date.now()}`;
+                road.appendChild(obstacle);
+                obstacles.push(obstacle);
+                
+                // Remove obstacle when it goes off screen
+                const checkObstacle = setInterval(() => {
+                    if (!gameRunning || gamePaused) return;
+                    
+                    const currentTop = parseInt(obstacle.style.top);
+                    obstacle.style.top = `${currentTop + speed}px`;
+                    
+                    // Check collision
+                    if (checkCollision(playerCar, obstacle)) {
+                        endGame();
+                        clearInterval(checkObstacle);
+                        return;
+                    }
+                    
+                    // Remove obstacle when off screen
+                    if (currentTop > 400) {
+                        obstacle.remove();
+                        obstacles = obstacles.filter(o => o.id !== obstacle.id);
+                        clearInterval(checkObstacle);
+                    }
+                }, 20);
+            }
+            
+            // Check collision
+            function checkCollision(car, obstacle) {
+                const carRect = car.getBoundingClientRect();
+                const obstacleRect = obstacle.getBoundingClientRect();
+                
+                return !(
+                    carRect.right < obstacleRect.left || 
+                    carRect.left > obstacleRect.right || 
+                    carRect.bottom < obstacleRect.top || 
+                    carRect.top > obstacleRect.bottom
+                );
+            }
+            
+            // Move car
+            function moveCar(direction) {
+                if (!gameRunning || gamePaused) return;
+                
+                const currentLeft = parseInt(playerCar.style.left);
+                const currentBottom = parseInt(playerCar.style.bottom);
+                
+                switch (direction) {
+                    case 'left':
+                        if (currentLeft > 70) {
+                            playerCar.style.left = `${currentLeft - 60}px`;
+                        } else {
+                            playerCar.classList.add('animate-shake');
+                            setTimeout(() => {
+                                playerCar.classList.remove('animate-shake');
+                            }, 500);
+                        }
+                        break;
+                    case 'right':
+                        if (currentLeft < 190) {
+                            playerCar.style.left = `${currentLeft + 60}px`;
+                        } else {
+                            playerCar.classList.add('animate-shake');
+                            setTimeout(() => {
+                                playerCar.classList.remove('animate-shake');
+                            }, 500);
+                        }
+                        break;
+                    case 'up':
+                        if (currentBottom < 300) {
+                            playerCar.style.bottom = `${currentBottom + 30}px`;
+                        }
+                        break;
+                    case 'down':
+                        if (currentBottom > 20) {
+                            playerCar.style.bottom = `${currentBottom - 30}px`;
+                        }
+                        break;
+                }
+            }
+            
+            // Increase score
+            function increaseScore() {
+                score++;
+                carScore.textContent = score;
+                
+                // Increase speed every 10 points
+                if (score % 10 === 0) {
+                    speed += 0.5;
+                }
+            }
+            
+            // Start game
+            function startGame() {
+                // Clear road
+                road.innerHTML = '';
+                
+                // Reset variables
+                score = 0;
+                speed = 2;
+                obstacles = [];
+                gameRunning = true;
+                gamePaused = false;
+                
+                // Update UI
+                carScore.textContent = score;
+                startScreen.classList.add('hidden');
+                gameOverScreen.classList.add('hidden');
+                pauseScreen.classList.add('hidden');
+                
+                // Create elements
+                createPlayerCar();
+                createLanes();
+                
+                // Start game loop
+                gameInterval = setInterval(() => {
+                    if (gamePaused) return;
+                    moveLanes();
+                    increaseScore();
+                }, 20);
+                
+                // Start obstacle generation
+                obstacleInterval = setInterval(() => {
+                    if (gamePaused) return;
+                    createObstacle();
+                }, 2000);
+            }
+            
+            // Pause game
+            function pauseGame() {
+                gamePaused = true;
+                pauseScreen.classList.remove('hidden');
+            }
+            
+            // Resume game
+            function resumeGame() {
+                gamePaused = false;
+                pauseScreen.classList.add('hidden');
+            }
+            
+            // End game
+            function endGame() {
+                gameRunning = false;
+                gamePaused = false;
+                
+                // Clear intervals
+                clearInterval(gameInterval);
+                clearInterval(obstacleInterval);
+                
+                // Update high score
+                if (score > highScore) {
+                    highScore = score;
+                    highScoreDisplay.textContent = highScore;
+                    localStorage.setItem('carGameHighScore', highScore);
+                }
+                
+                // Show game over screen
+                finalScore.textContent = score;
+                gameOverScreen.classList.remove('hidden');
+            }
+            
+            // Event listeners
+            startBtn.addEventListener('click', startGame);
+            restartCarBtn.addEventListener('click', startGame);
+            resumeBtn.addEventListener('click', resumeGame);
+            restartFromPauseBtn.addEventListener('click', startGame);
+            pauseBtn.addEventListener('click', () => {
+                if (gamePaused) {
+                    resumeGame();
+                } else {
+                    pauseGame();
+                }
+            });
+            
+            // Button controls
+            leftBtn.addEventListener('click', () => moveCar('left'));
+            rightBtn.addEventListener('click', () => moveCar('right'));
+            upBtn.addEventListener('click', () => moveCar('up'));
+            downBtn.addEventListener('click', () => moveCar('down'));
+            
+            // Keyboard controls
+            document.addEventListener('keydown', (e) => {
+                if (!gameRunning || gamePaused) return;
+                
+                switch (e.key) {
+                    case 'ArrowLeft':
+                        moveCar('left');
+                        break;
+                    case 'ArrowRight':
+                        moveCar('right');
+                        break;
+                    case 'ArrowUp':
+                        moveCar('up');
+                        break;
+                    case 'ArrowDown':
+                        moveCar('down');
+                        break;
+                    case ' ':
+                        pauseGame();
+                        break;
+                }
+            });
+        }
+        
+        // Initialize home screen
+        showScreen('home');
     </script>
 </body>
 </html>

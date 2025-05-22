@@ -1,34 +1,37 @@
 ! version = 2.0
 
 + hello
-- Hello there! 👋 Ready to play a game? Type "game" to start!
+- Hello! I'm FunBot. 🎉 Want to play a game? Try "riddle", "joke", or "guess number".
 
 + game
-- Type one of these: "riddle", "guess number", "fun fact", or "joke".
+- Try: "riddle", "joke", "guess number", "fun fact", or "show cat".
 
 + riddle
-- 🧠 I speak without a mouth and hear without ears. What am I?
+- I speak without a mouth and hear without ears. What am I?
 
 + echo
-- 🎉 Correct! You're smart! Type "game" for more.
-
-+ guess number
-- I'm thinking of a number between 1 and 5. Try to guess!
-
-+ 3
-- Close... but not it. Try another number.
-
-+ 2
-- 🎯 Yes! That was it. You're lucky! Type "game" again?
+- Yes! You're clever! 🎯
 
 + joke
-- 😂 Why did the scarecrow win an award? Because he was outstanding in his field!
+- Why don’t scientists trust atoms? Because they make up everything! 😆
 
 + fun fact
-- 🌟 Did you know? Bananas are berries, but strawberries aren't!
+- Did you know? Honey never spoils. Archaeologists found 3000-year-old honey in Egyptian tombs!
+
++ guess number
+- I'm thinking of a number between 1 and 5. Guess!
+
++ 3
+- Nope! Try again 😅
+
++ 4
+- 🥳 Yes! That's the number I had in mind!
+
++ show cat
+- Here's a cat: <img src="https://placekitten.com/200/200" width="150">
 
 + bye
-- Bye! Come play again soon 😊
+- See you again soon! 👋
 
 + *
-- Hmm... try typing "game", "riddle", "joke", "fun fact", or "bye".
+- I'm still learning. Try: "riddle", "joke", or "show cat".

@@ -21,12 +21,6 @@
                             dark: '#CC4B00',
                             light: '#FFB38A',
                             bg: '#FFF5F0'
-                        },
-                        snake: {
-                            primary: '#00C853',
-                            dark: '#009624',
-                            light: '#5EFB8D',
-                            bg: '#F0FFF4'
                         }
                     },
                     keyframes: {
@@ -46,18 +40,13 @@
                             '0%, 100%': { transform: 'translateX(0)' },
                             '10%, 30%, 50%, 70%, 90%': { transform: 'translateX(-5px)' },
                             '20%, 40%, 60%, 80%': { transform: 'translateX(5px)' }
-                        },
-                        'snake-glow': {
-                            '0%, 100%': { boxShadow: '0 0 5px #00C853' },
-                            '50%': { boxShadow: '0 0 15px #00C853' }
                         }
                     },
                     animation: {
                         'fade-in': 'fade-in 0.3s ease-out forwards',
                         'bounce': 'bounce 1s infinite',
                         'pulse': 'pulse 1.5s infinite',
-                        'shake': 'shake 0.5s',
-                        'snake-glow': 'snake-glow 1.5s infinite'
+                        'shake': 'shake 0.5s'
                     }
                 }
             }
@@ -133,54 +122,9 @@
         .game-btn:active {
             transform: scale(0.95);
         }
-        #snake-game {
-            width: 300px;
-            height: 300px;
-            margin: 0 auto;
-            position: relative;
-            border: 2px solid #00C853;
-            border-radius: 8px;
-            background-color: #000;
-        }
-        .snake-segment {
-            position: absolute;
-            width: 20px;
-            height: 20px;
-            background-color: #00C853;
-            border-radius: 3px;
-            animation: snake-glow;
-        }
-        .snake-head {
-            background-color: #5EFB8D;
-            z-index: 2;
-        }
-        .snake-food {
-            position: absolute;
-            width: 20px;
-            height: 20px;
-            background-color: #FF4081;
-            border-radius: 50%;
-            z-index: 1;
-            box-shadow: 0 0 10px #FF4081;
-        }
-        .grid-line {
-            position: absolute;
-            background-color: rgba(255, 255, 255, 0.05);
-        }
     </style>
 </head>
 <body class="bg-gray-100 font-sans">
-    <!-- Audio elements for sound effects -->
-    <audio id="click-sound" src="https://assets.mixkit.co/sfx/preview/mixkit-select-click-1109.mp3"></audio>
-    <audio id="correct-sound" src="https://assets.mixkit.co/sfx/preview/mixkit-correct-answer-tone-2870.mp3"></audio>
-    <audio id="wrong-sound" src="https://assets.mixkit.co/sfx/preview/mixkit-wrong-answer-fail-notification-946.mp3"></audio>
-    <audio id="game-over-sound" src="https://assets.mixkit.co/sfx/preview/mixkit-retro-arcade-lose-2027.mp3"></audio>
-    <audio id="car-move-sound" src="https://assets.mixkit.co/sfx/preview/mixkit-car-engine-revving-1564.mp3"></audio>
-    <audio id="car-crash-sound" src="https://assets.mixkit.co/sfx/preview/mixkit-car-crash-with-reverb-1563.mp3"></audio>
-    <audio id="snake-eat-sound" src="https://assets.mixkit.co/sfx/preview/mixkit-arcade-game-jump-coin-216.mp3"></audio>
-    <audio id="snake-move-sound" src="https://assets.mixkit.co/sfx/preview/mixkit-quick-jump-arcade-game-239.mp3"></audio>
-    <audio id="snake-crash-sound" src="https://assets.mixkit.co/sfx/preview/mixkit-retro-arcade-lose-2027.mp3"></audio>
-    
     <!-- Home Screen -->
     <div id="home-screen" class="max-w-md mx-auto min-h-screen flex flex-col">
         <div class="p-6 flex-1 flex flex-col justify-center">
@@ -194,7 +138,7 @@
             
             <div class="space-y-4">
                 <div 
-                    id="yes-no-game-btn"
+                    id="yes-no-game-btn" 
                     class="bg-white p-4 rounded-xl shadow-md flex items-center cursor-pointer hover:shadow-lg transition-shadow"
                     onclick="loadGame('yes-no')"
                 >
@@ -211,7 +155,7 @@
                 </div>
                 
                 <div 
-                    id="car-game-btn"
+                    id="car-game-btn" 
                     class="bg-white p-4 rounded-xl shadow-md flex items-center cursor-pointer hover:shadow-lg transition-shadow"
                     onclick="loadGame('car')"
                 >
@@ -226,23 +170,6 @@
                         <i class="fas fa-chevron-right text-gray-400"></i>
                     </div>
                 </div>
-                
-                <div 
-                    id="snake-game-btn"
-                    class="bg-white p-4 rounded-xl shadow-md flex items-center cursor-pointer hover:shadow-lg transition-shadow"
-                    onclick="loadGame('snake')"
-                >
-                    <div class="w-12 h-12 rounded-lg bg-snake-primary flex items-center justify-center mr-4">
-                        <i class="fas fa-snake text-white text-xl"></i>
-                    </div>
-                    <div>
-                        <h3 class="font-bold text-gray-800">Neo Snake</h3>
-                        <p class="text-sm text-gray-600">Classic snake game with a modern twist</p>
-                    </div>
-                    <div class="ml-auto">
-                        <i class="fas fa-chevron-right text-gray-400"></i>
-                    </div>
-                </div>
             </div>
         </div>
         
@@ -250,15 +177,14 @@
             <p>Game Center © 2023</p>
         </div>
     </div>
-
+    
     <!-- Yes/No Game Screen -->
     <div id="yes-no-game" class="max-w-md mx-auto bg-white shadow-lg rounded-lg overflow-hidden h-screen flex flex-col hidden">
         <!-- Chat header with score indicator -->
         <div class="game-header text-white p-4 flex items-center relative from-accenture-primary to-accenture-dark">
             <button 
-                id="back-btn-yesno"
+                id="back-btn-yesno" 
                 class="mr-3 w-8 h-8 rounded-full bg-white/20 text-white flex items-center justify-center hover:bg-white/30 transition-colors"
-                onclick="playSound('click-sound')"
             >
                 <i class="fas fa-arrow-left"></i>
             </button>
@@ -296,33 +222,32 @@
             <div class="flex items-center">
                 <div class="flex-1 relative">
                     <input 
-                        type="text"
-                        id="message-input"
-                        placeholder="Type Yes or No..."
+                        type="text" 
+                        id="message-input" 
+                        placeholder="Type Yes or No..." 
                         class="w-full py-2 px-4 rounded-full bg-gray-100 focus:outline-none focus:ring-2 focus:ring-accenture-primary focus:bg-white transition-all duration-200"
                         autocomplete="off"
                     >
                 </div>
-                <button id="send-button" class="ml-3 w-10 h-10 rounded-full bg-accenture-primary text-white flex items-center justify-center hover:bg-accenture-dark transition-colors duration-200" onclick="playSound('click-sound')">
+                <button id="send-button" class="ml-3 w-10 h-10 rounded-full bg-accenture-primary text-white flex items-center justify-center hover:bg-accenture-dark transition-colors duration-200">
                     <i class="fas fa-paper-plane"></i>
                 </button>
             </div>
             <div class="flex justify-center mt-2 space-x-2">
-                <button id="yes-btn" class="px-4 py-1 bg-green-500 text-white rounded-full text-sm hover:bg-green-600 transition-colors duration-200 game-btn" onclick="playSound('click-sound')">Yes</button>
-                <button id="no-btn" class="px-4 py-1 bg-red-500 text-white rounded-full text-sm hover:bg-red-600 transition-colors duration-200 game-btn" onclick="playSound('click-sound')">No</button>
-                <button id="restart-btn" class="px-4 py-1 bg-blue-500 text-white rounded-full text-sm hover:bg-blue-600 transition-colors duration-200 game-btn hidden" onclick="playSound('click-sound')">Restart</button>
+                <button id="yes-btn" class="px-4 py-1 bg-green-500 text-white rounded-full text-sm hover:bg-green-600 transition-colors duration-200 game-btn">Yes</button>
+                <button id="no-btn" class="px-4 py-1 bg-red-500 text-white rounded-full text-sm hover:bg-red-600 transition-colors duration-200 game-btn">No</button>
+                <button id="restart-btn" class="px-4 py-1 bg-blue-500 text-white rounded-full text-sm hover:bg-blue-600 transition-colors duration-200 game-btn hidden">Restart</button>
             </div>
         </div>
     </div>
-
+    
     <!-- Car Game Screen -->
     <div id="car-game" class="max-w-md mx-auto bg-white shadow-lg rounded-lg overflow-hidden h-screen flex flex-col hidden">
         <!-- Game header -->
         <div class="game-header text-white p-4 flex items-center relative from-racing-primary to-racing-dark">
             <button 
-                id="back-btn-car"
+                id="back-btn-car" 
                 class="mr-3 w-8 h-8 rounded-full bg-white/20 text-white flex items-center justify-center hover:bg-white/30 transition-colors"
-                onclick="playSound('click-sound')"
             >
                 <i class="fas fa-arrow-left"></i>
             </button>
@@ -338,9 +263,8 @@
                     <p class="text-xs opacity-80">High Score: <span id="high-score">0</span></p>
                 </div>
                 <button 
-                    id="pause-btn"
+                    id="pause-btn" 
                     class="w-8 h-8 rounded-full bg-white/20 text-white flex items-center justify-center hover:bg-white/30 transition-colors"
-                    onclick="playSound('click-sound')"
                 >
                     <i class="fas fa-pause"></i>
                 </button>
@@ -359,9 +283,8 @@
                 <h3 class="text-xl font-bold text-gray-800 mb-2">Game Over!</h3>
                 <p class="text-gray-600 mb-4">Your score: <span id="final-score">0</span></p>
                 <button 
-                    id="restart-car-btn"
+                    id="restart-car-btn" 
                     class="px-4 py-2 bg-racing-primary text-white rounded-full hover:bg-racing-dark transition-colors w-full game-btn"
-                    onclick="playSound('click-sound')"
                 >
                     Play Again
                 </button>
@@ -371,9 +294,8 @@
                 <h3 class="text-xl font-bold text-gray-800 mb-4">Speed Racer</h3>
                 <p class="text-gray-600 mb-4">Dodge the red obstacles using the arrow keys or buttons below</p>
                 <button 
-                    id="start-btn"
+                    id="start-btn" 
                     class="px-4 py-2 bg-racing-primary text-white rounded-full hover:bg-racing-dark transition-colors w-full game-btn"
-                    onclick="playSound('click-sound')"
                 >
                     Start Game
                 </button>
@@ -382,16 +304,14 @@
             <div id="pause-screen" class="hidden text-center bg-white p-6 rounded-xl shadow-lg max-w-xs">
                 <h3 class="text-xl font-bold text-gray-800 mb-4">Game Paused</h3>
                 <button 
-                    id="resume-btn"
+                    id="resume-btn" 
                     class="px-4 py-2 bg-racing-primary text-white rounded-full hover:bg-racing-dark transition-colors w-full game-btn mb-2"
-                    onclick="playSound('click-sound')"
                 >
                     Resume
                 </button>
                 <button 
-                    id="restart-from-pause-btn"
+                    id="restart-from-pause-btn" 
                     class="px-4 py-2 bg-gray-500 text-white rounded-full hover:bg-gray-600 transition-colors w-full game-btn"
-                    onclick="playSound('click-sound')"
                 >
                     Restart
                 </button>
@@ -401,16 +321,16 @@
         <!-- Controls -->
         <div class="border-t border-gray-200 p-4 bg-white">
             <div class="flex justify-center space-x-4 mb-2">
-                <button id="left-btn" class="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center game-btn" onclick="playSound('car-move-sound')">
+                <button id="left-btn" class="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center game-btn">
                     <i class="fas fa-arrow-left text-gray-700"></i>
                 </button>
-                <button id="up-btn" class="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center game-btn" onclick="playSound('car-move-sound')">
+                <button id="up-btn" class="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center game-btn">
                     <i class="fas fa-arrow-up text-gray-700"></i>
                 </button>
-                <button id="down-btn" class="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center game-btn" onclick="playSound('car-move-sound')">
+                <button id="down-btn" class="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center game-btn">
                     <i class="fas fa-arrow-down text-gray-700"></i>
                 </button>
-                <button id="right-btn" class="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center game-btn" onclick="playSound('car-move-sound')">
+                <button id="right-btn" class="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center game-btn">
                     <i class="fas fa-arrow-right text-gray-700"></i>
                 </button>
             </div>
@@ -418,738 +338,607 @@
         </div>
     </div>
 
-    <!-- Snake Game Screen -->
-    <div id="snake-game-screen" class="max-w-md mx-auto bg-white shadow-lg rounded-lg overflow-hidden h-screen flex flex-col hidden">
-        <!-- Game header -->
-        <div class="game-header text-white p-4 flex items-center relative from-snake-primary to-snake-dark">
-            <button 
-                id="back-btn-snake"
-                class="mr-3 w-8 h-8 rounded-full bg-white/20 text-white flex items-center justify-center hover:bg-white/30 transition-colors"
-                onclick="playSound('click-sound')"
-            >
-                <i class="fas fa-arrow-left"></i>
-            </button>
-            <div class="w-10 h-10 rounded-full bg-white flex items-center justify-center mr-3">
-                <i class="fas fa-snake text-snake-primary text-xl"></i>
-            </div>
-            <div>
-                <h1 class="font-bold text-lg">Neo Snake</h1>
-                <p class="text-xs opacity-80">Score: <span id="snake-score">0</span></p>
-            </div>
-            <div class="ml-auto flex items-center">
-                <div class="mr-4">
-                    <p class="text-xs opacity-80">High Score: <span id="snake-high-score">0</span></p>
-                </div>
-                <button 
-                    id="snake-pause-btn"
-                    class="w-8 h-8 rounded-full bg-white/20 text-white flex items-center justify-center hover:bg-white/30 transition-colors"
-                    onclick="playSound('click-sound')"
-                >
-                    <i class="fas fa-pause"></i>
-                </button>
-            </div>
-        </div>
-        
-        <!-- Game area -->
-        <div class="flex-1 bg-snake-bg p-4 flex flex-col items-center justify-center">
-            <div id="snake-game" class="relative">
-                <!-- Snake and food will be added here -->
-            </div>
-            
-            <div id="snake-game-over" class="hidden text-center bg-white p-6 rounded-xl shadow-lg max-w-xs">
-                <h3 class="text-xl font-bold text-gray-800 mb-2">Game Over!</h3>
-                <p class="text-gray-600 mb-4">Your score: <span id="final-snake-score">0</span></p>
-                <button 
-                    id="restart-snake-btn"
-                    class="px-4 py-2 bg-snake-primary text-white rounded-full hover:bg-snake-dark transition-colors w-full game-btn"
-                    onclick="playSound('click-sound')"
-                >
-                    Play Again
-                </button>
-            </div>
-            
-            <div id="snake-start-screen" class="text-center bg-white p-6 rounded-xl shadow-lg max-w-xs">
-                <h3 class="text-xl font-bold text-gray-800 mb-4">Neo Snake</h3>
-                <p class="text-gray-600 mb-4">Use arrow keys or buttons to control the snake and eat the food</p>
-                <button 
-                    id="start-snake-btn"
-                    class="px-4 py-2 bg-snake-primary text-white rounded-full hover:bg-snake-dark transition-colors w-full game-btn"
-                    onclick="playSound('click-sound')"
-                >
-                    Start Game
-                </button>
-            </div>
-            
-            <div id="snake-pause-screen" class="hidden text-center bg-white p-6 rounded-xl shadow-lg max-w-xs">
-                <h3 class="text-xl font-bold text-gray-800 mb-4">Game Paused</h3>
-                <button 
-                    id="resume-snake-btn"
-                    class="px-4 py-2 bg-snake-primary text-white rounded-full hover:bg-snake-dark transition-colors w-full game-btn mb-2"
-                    onclick="playSound('click-sound')"
-                >
-                    Resume
-                </button>
-                <button 
-                    id="restart-from-snake-pause-btn"
-                    class="px-4 py-2 bg-gray-500 text-white rounded-full hover:bg-gray-600 transition-colors w-full game-btn"
-                    onclick="playSound('click-sound')"
-                >
-                    Restart
-                </button>
-            </div>
-        </div>
-        
-        <!-- Controls -->
-        <div class="border-t border-gray-200 p-4 bg-white">
-            <div class="flex justify-center space-x-4 mb-2">
-                <button id="snake-left-btn" class="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center game-btn" onclick="playSound('click-sound')">
-                    <i class="fas fa-arrow-left text-gray-700"></i>
-                </button>
-                <button id="snake-up-btn" class="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center game-btn" onclick="playSound('click-sound')">
-                    <i class="fas fa-arrow-up text-gray-700"></i>
-                </button>
-                <button id="snake-down-btn" class="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center game-btn" onclick="playSound('click-sound')">
-                    <i class="fas fa-arrow-down text-gray-700"></i>
-                </button>
-                <button id="snake-right-btn" class="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center game-btn" onclick="playSound('click-sound')">
-                    <i class="fas fa-arrow-right text-gray-700"></i>
-                </button>
-            </div>
-            <p class="text-center text-xs text-gray-500">Use arrow keys or buttons to control the snake</p>
-        </div>
-    </div>
-
     <script>
         // Global variables
-        let currentGame = null;
-        let score = 0;
-        let totalQuestions = 5;
-        let currentQuestion = 0;
-        let questions = [
-            { question: "Is the sky blue?", answer: "yes" },
-            { question: "Is water wet?", answer: "yes" },
-            { question: "Is the Earth flat?", answer: "no" },
-            { question: "Do dogs bark?", answer: "yes" },
-            { question: "Is fire cold?", answer: "no" }
-        ];
-        
-        // Car game variables
-        let carGameInterval;
-        let carScore = 0;
-        let carHighScore = localStorage.getItem('carHighScore') || 0;
-        let isCarGameRunning = false;
-        let isCarGamePaused = false;
-        let playerCar = null;
-        let obstacles = [];
-        let lanes = [];
-        
-        // Snake game variables
-        let snakeGameInterval;
-        let snakeScore = 0;
-        let snakeHighScore = localStorage.getItem('snakeHighScore') || 0;
-        let isSnakeGameRunning = false;
-        let isSnakeGamePaused = false;
-        let snake = [];
-        let food = null;
-        let direction = 'right';
-        let nextDirection = 'right';
-        let gridSize = 20;
-        let gameWidth = 300;
-        let gameHeight = 300;
+        let currentScreen = 'home';
         
         // DOM elements
         const homeScreen = document.getElementById('home-screen');
         const yesNoGame = document.getElementById('yes-no-game');
         const carGame = document.getElementById('car-game');
-        const snakeGameScreen = document.getElementById('snake-game-screen');
-        
-        // Sound functions
-        function playSound(soundId) {
-            const sound = document.getElementById(soundId);
-            sound.currentTime = 0;
-            sound.play();
-        }
         
         // Navigation functions
-        function loadGame(game) {
-            playSound('click-sound');
-            currentGame = game;
-            
+        function showScreen(screen) {
             homeScreen.classList.add('hidden');
             yesNoGame.classList.add('hidden');
             carGame.classList.add('hidden');
-            snakeGameScreen.classList.add('hidden');
             
-            switch(game) {
-                case 'yes-no':
-                    yesNoGame.classList.remove('hidden');
-                    startYesNoGame();
-                    break;
-                case 'car':
-                    carGame.classList.remove('hidden');
-                    document.getElementById('high-score').textContent = carHighScore;
-                    break;
-                case 'snake':
-                    snakeGameScreen.classList.remove('hidden');
-                    document.getElementById('snake-high-score').textContent = snakeHighScore;
-                    break;
+            currentScreen = screen;
+            
+            if (screen === 'home') {
+                homeScreen.classList.remove('hidden');
+            } else if (screen === 'yes-no') {
+                yesNoGame.classList.remove('hidden');
+                initYesNoGame();
+            } else if (screen === 'car') {
+                carGame.classList.remove('hidden');
+                initCarGame();
             }
         }
         
-        function goHome() {
-            playSound('click-sound');
-            
-            // Stop any running games
-            if (isCarGameRunning) {
-                clearInterval(carGameInterval);
-                isCarGameRunning = false;
+        function loadGame(game) {
+            if (game === 'yes-no') {
+                showScreen('yes-no');
+            } else if (game === 'car') {
+                showScreen('car');
             }
-            
-            if (isSnakeGameRunning) {
-                clearInterval(snakeGameInterval);
-                isSnakeGameRunning = false;
-            }
-            
-            homeScreen.classList.remove('hidden');
-            yesNoGame.classList.add('hidden');
-            carGame.classList.add('hidden');
-            snakeGameScreen.classList.add('hidden');
         }
         
-        // Yes/No Game functions
-        function startYesNoGame() {
-            score = 0;
-            currentQuestion = 0;
-            document.getElementById('score-display').textContent = score;
-            document.getElementById('total-questions').textContent = totalQuestions;
-            document.getElementById('score-bar').style.width = '0%';
-            document.getElementById('messages').innerHTML = '';
-            document.getElementById('restart-btn').classList.add('hidden');
-            
-            addMessage('bot', 'Welcome to the Yes or No Quiz! I will ask you ' + totalQuestions + ' questions. Just answer with "Yes" or "No". Ready?');
-            setTimeout(() => {
-                askQuestion();
-            }, 1500);
-        }
+        // Back buttons
+        document.getElementById('back-btn-yesno').addEventListener('click', () => showScreen('home'));
+        document.getElementById('back-btn-car').addEventListener('click', () => showScreen('home'));
         
-        function askQuestion() {
-            if (currentQuestion >= totalQuestions) {
-                endGame();
-                return;
-            }
-            
-            const question = questions[currentQuestion].question;
-            addMessage('bot', question);
-            
-            document.getElementById('typing-indicator').classList.remove('hidden');
-            setTimeout(() => {
-                document.getElementById('typing-indicator').classList.add('hidden');
-            }, 1000);
-        }
-        
-        function addMessage(sender, text) {
+        // Initialize Yes/No Game
+        function initYesNoGame() {
+            const messageInput = document.getElementById('message-input');
+            const sendButton = document.getElementById('send-button');
             const messagesContainer = document.getElementById('messages');
-            const messageDiv = document.createElement('div');
+            const typingIndicator = document.getElementById('typing-indicator');
+            const scoreDisplay = document.getElementById('score-display');
+            const totalQuestionsDisplay = document.getElementById('total-questions');
+            const scoreBar = document.getElementById('score-bar');
+            const yesBtn = document.getElementById('yes-btn');
+            const noBtn = document.getElementById('no-btn');
+            const restartBtn = document.getElementById('restart-btn');
+            const messagesContainerDiv = document.getElementById('messages-container');
+
+            // Yes/No Questions Database
+            const questions = [
+                { q: "Is the sky blue?", a: "yes" },
+                { q: "Does 2 + 2 equal 5?", a: "no" },
+                { q: "Is Python a programming language?", a: "yes" },
+                { q: "Is the earth flat?", a: "no" },
+                { q: "Is pizza a fruit?", a: "no" },
+                { q: "Can humans breathe underwater unaided?", a: "no" },
+                { q: "Do birds fly?", a: "yes" },
+                { q: "Is water wet?", a: "yes" },
+                { q: "Is summer colder than winter?", a: "no" },
+                { q: "Is fire hot?", a: "yes" },
+                { q: "Is the moon made of cheese?", a: "no" },
+                { q: "Is chocolate bad for dogs?", a: "yes" },
+                { q: "Is the sun a star?", a: "yes" },
+                { q: "Can penguins fly?", a: "no" },
+                { q: "Is the capital of France London?", a: "no" }
+            ];
             
-            if (sender === 'bot') {
-                messageDiv.className = 'flex items-start';
-                messageDiv.innerHTML = `
-                    <div class="w-8 h-8 rounded-full bg-accenture-primary flex items-center justify-center mr-2">
-                        <i class="fas fa-robot text-white text-sm"></i>
-                    </div>
-                    <div class="px-4 py-2 rounded-lg bg-white shadow-sm border border-accenture-light">
-                        <p class="text-gray-800">${text}</p>
-                    </div>
-                `;
-            } else {
-                messageDiv.className = 'flex items-start justify-end';
-                messageDiv.innerHTML = `
-                    <div class="px-4 py-2 rounded-lg bg-accenture-primary text-white shadow-sm">
-                        <p>${text}</p>
-                    </div>
-                    <div class="w-8 h-8 rounded-full bg-accenture-dark flex items-center justify-center ml-2">
-                        <i class="fas fa-user text-white text-sm"></i>
-                    </div>
-                `;
-            }
-            
-            messagesContainer.appendChild(messageDiv);
-            document.getElementById('messages-container').scrollTop = document.getElementById('messages-container').scrollHeight;
-        }
-        
-        function checkAnswer(answer) {
-            const correctAnswer = questions[currentQuestion].answer;
-            const userAnswer = answer.toLowerCase();
-            
-            addMessage('user', userAnswer === 'yes' ? 'Yes' : 'No');
-            
-            if (userAnswer === correctAnswer) {
-                playSound('correct-sound');
-                score++;
-                document.getElementById('score-display').textContent = score;
-                const percentage = (score / totalQuestions) * 100;
-                document.getElementById('score-bar').style.width = percentage + '%';
-                
-                // Add confetti effect for correct answer
-                createConfetti();
-                
-                addMessage('bot', 'Correct! 🎉');
-            } else {
-                playSound('wrong-sound');
-                addMessage('bot', 'Wrong! The correct answer was ' + (correctAnswer === 'yes' ? 'Yes' : 'No'));
-            }
-            
-            currentQuestion++;
-            
-            if (currentQuestion < totalQuestions) {
-                setTimeout(() => {
-                    askQuestion();
-                }, 1000);
-            } else {
-                setTimeout(() => {
-                    endGame();
-                }, 1000);
-            }
-        }
-        
-        function endGame() {
-            const percentage = (score / totalQuestions) * 100;
-            let message = '';
-            
-            if (percentage === 100) {
-                message = 'Perfect! You got all questions right! 🎉';
-            } else if (percentage >= 80) {
-                message = 'Great job! You got most questions right!';
-            } else if (percentage >= 60) {
-                message = 'Good effort! You got more than half right.';
-            } else {
-                message = 'Keep practicing! You can do better next time.';
-            }
-            
-            addMessage('bot', `Game over! Your score: ${score}/${totalQuestions}. ${message}`);
-            document.getElementById('restart-btn').classList.remove('hidden');
-            playSound('game-over-sound');
-        }
-        
-        function createConfetti() {
-            const colors = ['#A100FF', '#FF5E00', '#00C853', '#FF4081', '#00B0FF'];
-            const container = document.getElementById('messages-container');
-            
-            for (let i = 0; i < 50; i++) {
-                const confetti = document.createElement('div');
-                confetti.className = 'confetti';
-                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-                confetti.style.left = Math.random() * 100 + '%';
-                confetti.style.top = '-10px';
-                confetti.style.animation = `confetti-fall ${Math.random() * 3 + 2}s linear forwards`;
-                confetti.style.animationDelay = Math.random() * 0.5 + 's';
-                
-                container.appendChild(confetti);
+            let usedQuestions = [];
+            let score = 0;
+            let turn = 0;
+            let totalQuestions = 5;
+            let gameActive = true;
+
+            function createConfetti() {
+                for (let i = 0; i < 50; i++) {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.left = Math.random() * 100 + '%';
+                    confetti.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 50%)`;
+                    confetti.style.animation = `confetti-fall ${Math.random() * 3 + 2}s linear forwards`;
+                    confetti.style.animationDelay = Math.random() * 0.5 + 's';
+                    messagesContainerDiv.appendChild(confetti);
+                }
                 
                 setTimeout(() => {
-                    confetti.remove();
+                    const confettiElements = document.querySelectorAll('.confetti');
+                    confettiElements.forEach(el => el.remove());
                 }, 5000);
             }
-        }
-        
-        // Car Game functions
-        function startCarGame() {
-            playSound('click-sound');
-            document.getElementById('start-screen').classList.add('hidden');
-            document.getElementById('game-over').classList.add('hidden');
-            document.getElementById('pause-screen').classList.add('hidden');
-            
-            // Reset score
-            carScore = 0;
-            document.getElementById('car-score').textContent = carScore;
-            
-            // Clear road
-            const road = document.getElementById('road');
-            road.innerHTML = '';
-            
-            // Create lanes
-            for (let i = 0; i < 3; i++) {
-                const lane = document.createElement('div');
-                lane.className = 'lane';
-                lane.style.left = (i * 100 + 45) + 'px';
-                lane.style.top = '-60px';
-                road.appendChild(lane);
-                lanes.push(lane);
+
+            function addMessage(text, isUser = false) {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `flex items-start ${isUser ? 'justify-end' : ''} animate-fade-in`;
                 
-                // Animate lanes
-                animateLane(lane);
-            }
-            
-            // Create player car
-            playerCar = document.createElement('div');
-            playerCar.className = 'car';
-            playerCar.style.left = '130px';
-            playerCar.style.top = '320px';
-            playerCar.style.backgroundImage = 'url("https://cdn-icons-png.flaticon.com/512/744/744465.png")';
-            road.appendChild(playerCar);
-            
-            // Start game loop
-            isCarGameRunning = true;
-            isCarGamePaused = false;
-            carGameInterval = setInterval(updateCarGame, 50);
-            
-            // Add first obstacle after a delay
-            setTimeout(addObstacle, 2000);
-        }
-        
-        function animateLane(lane) {
-            let pos = -60;
-            const laneInterval = setInterval(() => {
-                if (!isCarGameRunning || isCarGamePaused) return;
-                
-                pos += 5;
-                lane.style.top = pos + 'px';
-                
-                if (pos > 400) {
-                    pos = -60;
+                if (!isUser) {
+                    messageDiv.innerHTML = `
+                        <div class="w-8 h-8 rounded-full bg-accenture-primary flex items-center justify-center mr-2">
+                            <i class="fas fa-robot text-white text-sm"></i>
+                        </div>
+                        <div class="max-w-xs lg:max-w-md px-4 py-2 rounded-lg bg-white shadow-sm border border-accenture-light">
+                            <p class="text-gray-800">${text}</p>
+                            <p class="text-xs text-gray-500 mt-1">${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</p>
+                        </div>
+                    `;
+                } else {
+                    messageDiv.innerHTML = `
+                        <div class="max-w-xs lg:max-w-md px-4 py-2 rounded-lg bg-accenture-primary text-white shadow-sm">
+                            <p>${text}</p>
+                            <p class="text-xs text-accenture-light mt-1">${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</p>
+                        </div>
+                    `;
                 }
-            }, 50);
-        }
-        
-        function addObstacle() {
-            if (!isCarGameRunning || isCarGamePaused) return;
-            
-            const road = document.getElementById('road');
-            const obstacle = document.createElement('div');
-            obstacle.className = 'obstacle';
-            
-            // Random lane (0, 1, or 2)
-            const lane = Math.floor(Math.random() * 3);
-            obstacle.style.left = (lane * 100 + 30) + 'px';
-            obstacle.style.top = '-40px';
-            road.appendChild(obstacle);
-            obstacles.push(obstacle);
-            
-            // Add next obstacle with random delay
-            const delay = Math.random() * 2000 + 1000;
-            setTimeout(addObstacle, delay);
-        }
-        
-        function updateCarGame() {
-            if (!isCarGameRunning || isCarGamePaused) return;
-            
-            // Update score
-            carScore++;
-            document.getElementById('car-score').textContent = carScore;
-            
-            // Move obstacles
-            for (let i = obstacles.length - 1; i >= 0; i--) {
-                const obstacle = obstacles[i];
-                const top = parseInt(obstacle.style.top) + 5;
-                obstacle.style.top = top + 'px';
                 
-                // Check collision
-                if (checkCollision(playerCar, obstacle)) {
-                    playSound('car-crash-sound');
-                    endCarGame();
+                messagesContainer.appendChild(messageDiv);
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            }
+
+            function showTyping() {
+                typingIndicator.classList.remove('hidden');
+                messagesContainer.appendChild(typingIndicator);
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            }
+
+            function hideTyping() {
+                typingIndicator.classList.add('hidden');
+            }
+
+            function updateScoreDisplay() {
+                scoreDisplay.textContent = score;
+                const percentage = (score / totalQuestions) * 100;
+                scoreBar.style.width = `${percentage}%`;
+            }
+
+            // Start/Restart the game
+            function startGame() {
+                usedQuestions = [];
+                score = 0;
+                turn = 0;
+                gameActive = true;
+                messagesContainer.innerHTML = '';
+                restartBtn.classList.add('hidden');
+                yesBtn.classList.remove('hidden');
+                noBtn.classList.remove('hidden');
+                totalQuestionsDisplay.textContent = totalQuestions;
+                updateScoreDisplay();
+                
+                addMessage("Welcome to the Yes or No Game! 🤖", false);
+                setTimeout(() => {
+                    addMessage(`You will be asked ${totalQuestions} questions. Answer with "Yes" or "No".`, false);
+                    setTimeout(() => {
+                        addMessage("Let's begin! 🎮", false);
+                        setTimeout(() => askQuestion(), 800);
+                    }, 800);
+                }, 800);
+            }
+
+            function askQuestion() {
+                if (turn >= totalQuestions) {
+                    endGame();
                     return;
                 }
                 
-                // Remove obstacle if out of screen
-                if (top > 400) {
-                    obstacle.remove();
-                    obstacles.splice(i, 1);
-                }
-            }
-        }
-        
-        function checkCollision(player, obstacle) {
-            const playerRect = {
-                left: parseInt(player.style.left),
-                top: parseInt(player.style.top),
-                right: parseInt(player.style.left) + 40,
-                bottom: parseInt(player.style.top) + 70
-            };
-            
-            const obstacleRect = {
-                left: parseInt(obstacle.style.left),
-                top: parseInt(obstacle.style.top),
-                right: parseInt(obstacle.style.left) + 40,
-                bottom: parseInt(obstacle.style.top) + 40
-            };
-            
-            return !(
-                playerRect.right < obstacleRect.left ||
-                playerRect.left > obstacleRect.right ||
-                playerRect.bottom < obstacleRect.top ||
-                playerRect.top > obstacleRect.bottom
-            );
-        }
-        
-        function moveCar(direction) {
-            if (!isCarGameRunning || isCarGamePaused) return;
-            
-            playSound('car-move-sound');
-            const car = playerCar;
-            let left = parseInt(car.style.left);
-            let top = parseInt(car.style.top);
-            
-            switch(direction) {
-                case 'left':
-                    if (left > 30) car.style.left = (left - 100) + 'px';
-                    break;
-                case 'right':
-                    if (left < 230) car.style.left = (left + 100) + 'px';
-                    break;
-                case 'up':
-                    if (top > 0) car.style.top = (top - 10) + 'px';
-                    break;
-                case 'down':
-                    if (top < 330) car.style.top = (top + 10) + 'px';
-                    break;
-            }
-        }
-        
-        function endCarGame() {
-            clearInterval(carGameInterval);
-            isCarGameRunning = false;
-            
-            // Update high score if needed
-            if (carScore > carHighScore) {
-                carHighScore = carScore;
-                localStorage.setItem('carHighScore', carHighScore);
-                document.getElementById('high-score').textContent = carHighScore;
-            }
-            
-            document.getElementById('final-score').textContent = carScore;
-            document.getElementById('game-over').classList.remove('hidden');
-            playSound('game-over-sound');
-        }
-        
-        function pauseCarGame() {
-            if (!isCarGameRunning) return;
-            
-            playSound('click-sound');
-            isCarGamePaused = true;
-            document.getElementById('pause-screen').classList.remove('hidden');
-        }
-        
-        function resumeCarGame() {
-            playSound('click-sound');
-            isCarGamePaused = false;
-            document.getElementById('pause-screen').classList.add('hidden');
-        }
-        
-        // Snake Game functions
-        function startSnakeGame() {
-            playSound('click-sound');
-            document.getElementById('snake-start-screen').classList.add('hidden');
-            document.getElementById('snake-game-over').classList.add('hidden');
-            document.getElementById('snake-pause-screen').classList.add('hidden');
-            
-            // Reset game state
-            snakeScore = 0;
-            document.getElementById('snake-score').textContent = snakeScore;
-            direction = 'right';
-            nextDirection = 'right';
-            
-            // Clear game area
-            const gameArea = document.getElementById('snake-game');
-            gameArea.innerHTML = '';
-            
-            // Create initial snake
-            snake = [
-                { x: 60, y: 140 },
-                { x: 40, y: 140 },
-                { x: 20, y: 140 }
-            ];
-            
-            // Create food
-            createFood();
-            
-            // Draw snake
-            drawSnake();
-            
-            // Start game loop
-            isSnakeGameRunning = true;
-            isSnakeGamePaused = false;
-            snakeGameInterval = setInterval(updateSnakeGame, 200);
-        }
-        
-        function drawSnake() {
-            const gameArea = document.getElementById('snake-game');
-            
-            // Clear previous snake segments
-            document.querySelectorAll('.snake-segment').forEach(seg => seg.remove());
-            
-            // Draw each segment
-            snake.forEach((segment, index) => {
-                const segmentElement = document.createElement('div');
-                segmentElement.className = 'snake-segment';
-                if (index === 0) segmentElement.classList.add('snake-head');
-                segmentElement.style.left = segment.x + 'px';
-                segmentElement.style.top = segment.y + 'px';
-                gameArea.appendChild(segmentElement);
-            });
-        }
-        
-        function createFood() {
-            const gameArea = document.getElementById('snake-game');
-            
-            // Remove existing food
-            if (food) {
-                food.remove();
-            }
-            
-            // Create new food at random position
-            const maxX = Math.floor(gameWidth / gridSize) - 1;
-            const maxY = Math.floor(gameHeight / gridSize) - 1;
-            
-            let foodX, foodY;
-            let validPosition = false;
-            
-            while (!validPosition) {
-                foodX = Math.floor(Math.random() * maxX) * gridSize;
-                foodY = Math.floor(Math.random() * maxY) * gridSize;
+                let idx;
+                do {
+                    idx = Math.floor(Math.random() * questions.length);
+                } while (usedQuestions.includes(idx) && usedQuestions.length < questions.length);
                 
-                // Check if food position collides with snake
-                validPosition = !snake.some(segment => segment.x === foodX && segment.y === foodY);
-            }
-            
-            food = document.createElement('div');
-            food.className = 'snake-food';
-            food.style.left = foodX + 'px';
-            food.style.top = foodY + 'px';
-            gameArea.appendChild(food);
-        }
-        
-        function updateSnakeGame() {
-            if (!isSnakeGameRunning || isSnakeGamePaused) return;
-            
-            // Update direction
-            direction = nextDirection;
-            
-            // Move snake
-            const head = { ...snake[0] };
-            
-            switch(direction) {
-                case 'up':
-                    head.y -= gridSize;
-                    break;
-                case 'down':
-                    head.y += gridSize;
-                    break;
-                case 'left':
-                    head.x -= gridSize;
-                    break;
-                case 'right':
-                    head.x += gridSize;
-                    break;
-            }
-            
-            // Check wall collision
-            if (head.x < 0 || head.x >= gameWidth || head.y < 0 || head.y >= gameHeight) {
-                playSound('snake-crash-sound');
-                endSnakeGame();
-                return;
-            }
-            
-            // Check self collision
-            if (snake.some(segment => segment.x === head.x && segment.y === head.y)) {
-                playSound('snake-crash-sound');
-                endSnakeGame();
-                return;
-            }
-            
-            // Add new head
-            snake.unshift(head);
-            
-            // Check food collision
-            const foodX = parseInt(food.style.left);
-            const foodY = parseInt(food.style.top);
-            
-            if (head.x === foodX && head.y === foodY) {
-                playSound('snake-eat-sound');
-                // Increase score
-                snakeScore += 10;
-                document.getElementById('snake-score').textContent = snakeScore;
+                usedQuestions.push(idx);
+                turn++;
                 
-                // Create new food
-                createFood();
-            } else {
-                // Remove tail if no food eaten
-                snake.pop();
+                setTimeout(() => {
+                    addMessage(`Question ${turn}: ${questions[idx].q}`, false);
+                    messageInput.disabled = false;
+                    messageInput.focus();
+                }, 600);
+                
+                messageInput.dataset.correct = questions[idx].a;
             }
-            
-            // Redraw snake
-            drawSnake();
-            playSound('snake-move-sound');
-        }
-        
-        function changeSnakeDirection(newDirection) {
-            // Prevent reversing direction
-            if (
-                (direction === 'up' && newDirection !== 'down') ||
-                (direction === 'down' && newDirection !== 'up') ||
-                (direction === 'left' && newDirection !== 'right') ||
-                (direction === 'right' && newDirection !== 'left')
-            ) {
-                nextDirection = newDirection;
-            }
-        }
-        
-        function endSnakeGame() {
-            clearInterval(snakeGameInterval);
-            isSnakeGameRunning = false;
-            
-            // Update high score if needed
-            if (snakeScore > snakeHighScore) {
-                snakeHighScore = snakeScore;
-                localStorage.setItem('snakeHighScore', snakeHighScore);
-                document.getElementById('snake-high-score').textContent = snakeHighScore;
-            }
-            
-            document.getElementById('final-snake-score').textContent = snakeScore;
-            document.getElementById('snake-game-over').classList.remove('hidden');
-            playSound('game-over-sound');
-        }
-        
-        function pauseSnakeGame() {
-            if (!isSnakeGameRunning) return;
-            
-            playSound('click-sound');
-            isSnakeGamePaused = true;
-            document.getElementById('snake-pause-screen').classList.remove('hidden');
-        }
-        
-        function resumeSnakeGame() {
-            playSound('click-sound');
-            isSnakeGamePaused = false;
-            document.getElementById('snake-pause-screen').classList.add('hidden');
-        }
-        
-        // Event listeners
-        document.addEventListener('DOMContentLoaded', () => {
-            // Yes/No Game
-            document.getElementById('back-btn-yesno').addEventListener('click', goHome);
-            document.getElementById('yes-btn').addEventListener('click', () => checkAnswer('yes'));
-            document.getElementById('no-btn').addEventListener('click', () => checkAnswer('no'));
-            document.getElementById('restart-btn').addEventListener('click', startYesNoGame);
-            document.getElementById('send-button').addEventListener('click', () => {
-                const input = document.getElementById('message-input');
-                if (input.value.toLowerCase() === 'yes' || input.value.toLowerCase() === 'no') {
-                    checkAnswer(input.value);
-                    input.value = '';
+
+            function handleUserAnswer(userInput) {
+                if (!gameActive) return;
+                
+                const answer = userInput.trim().toLowerCase();
+                const correct = messageInput.dataset.correct;
+                
+                if (answer !== "yes" && answer !== "no") {
+                    addMessage("Please answer only 'Yes' or 'No'.", false);
+                    return;
                 }
-            });
-            document.getElementById('message-input').addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') {
-                    const input = document.getElementById('message-input');
-                    if (input.value.toLowerCase() === 'yes' || input.value.toLowerCase() === 'no') {
-                        checkAnswer(input.value);
-                        input.value = '';
+                
+                addMessage(userInput.charAt(0).toUpperCase() + userInput.slice(1), true);
+                showTyping();
+                
+                setTimeout(() => {
+                    hideTyping();
+                    
+                    if (answer === correct) {
+                        score++;
+                        updateScoreDisplay();
+                        addMessage("✅ Correct! Well done!", false);
+                        
+                        // Small celebration for correct answers
+                        if (score === totalQuestions) {
+                            setTimeout(() => {
+                                addMessage("🎉 Perfect score! Amazing!", false);
+                                createConfetti();
+                            }, 800);
+                        }
+                    } else {
+                        addMessage(`❌ Oops! The correct answer was "${correct.charAt(0).toUpperCase() + correct.slice(1)}".`, false);
                     }
+                    
+                    askQuestion();
+                }, 900);
+            }
+
+            function endGame() {
+                gameActive = false;
+                messageInput.disabled = true;
+                yesBtn.classList.add('hidden');
+                noBtn.classList.add('hidden');
+                restartBtn.classList.remove('hidden');
+                
+                setTimeout(() => {
+                    const percentage = (score / totalQuestions) * 100;
+                    let message;
+                    
+                    if (percentage === 100) {
+                        message = `🏆 Perfect score! ${score}/${totalQuestions}! You're amazing!`;
+                        createConfetti();
+                    } else if (percentage >= 80) {
+                        message = `🎉 Great job! You scored ${score}/${totalQuestions}!`;
+                    } else if (percentage >= 50) {
+                        message = `👍 Good effort! You got ${score}/${totalQuestions}.`;
+                    } else {
+                        message = `🤔 You scored ${score}/${totalQuestions}. Try again to improve!`;
+                    }
+                    
+                    addMessage(message, false);
+                    setTimeout(() => {
+                        addMessage('Click "Restart" to play again!', false);
+                    }, 800);
+                }, 800);
+            }
+
+            // Event listeners
+            sendButton.addEventListener('click', function() {
+                const message = messageInput.value.trim();
+                if (!message) return;
+                
+                if (!gameActive && message.toLowerCase() === "restart") {
+                    startGame();
+                } else if (gameActive) {
+                    handleUserAnswer(message);
+                }
+                
+                messageInput.value = '';
+            });
+
+            messageInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    const message = messageInput.value.trim();
+                    if (!message) return;
+                    
+                    if (!gameActive && message.toLowerCase() === "restart") {
+                        startGame();
+                    } else if (gameActive) {
+                        handleUserAnswer(message);
+                    }
+                    
+                    messageInput.value = '';
+                }
+            });
+
+            yesBtn.addEventListener('click', () => {
+                if (gameActive) {
+                    handleUserAnswer('yes');
+                }
+            });
+
+            noBtn.addEventListener('click', () => {
+                if (gameActive) {
+                    handleUserAnswer('no');
+                }
+            });
+
+            restartBtn.addEventListener('click', startGame);
+
+            // Start game
+            startGame();
+        }
+        
+        // Initialize Car Game
+        function initCarGame() {
+            // DOM elements
+            const road = document.getElementById('road');
+            const carScore = document.getElementById('car-score');
+            const highScoreDisplay = document.getElementById('high-score');
+            const finalScore = document.getElementById('final-score');
+            const startScreen = document.getElementById('start-screen');
+            const gameOverScreen = document.getElementById('game-over');
+            const pauseScreen = document.getElementById('pause-screen');
+            const startBtn = document.getElementById('start-btn');
+            const restartCarBtn = document.getElementById('restart-car-btn');
+            const resumeBtn = document.getElementById('resume-btn');
+            const restartFromPauseBtn = document.getElementById('restart-from-pause-btn');
+            const leftBtn = document.getElementById('left-btn');
+            const rightBtn = document.getElementById('right-btn');
+            const upBtn = document.getElementById('up-btn');
+            const downBtn = document.getElementById('down-btn');
+            const pauseBtn = document.getElementById('pause-btn');
+            
+            // Game variables
+            let playerCar;
+            let obstacles = [];
+            let lanes = [];
+            let score = 0;
+            let highScore = localStorage.getItem('carGameHighScore') || 0;
+            let gameInterval;
+            let obstacleInterval;
+            let speed = 2;
+            let gameRunning = false;
+            let gamePaused = false;
+            
+            // Initialize display
+            highScoreDisplay.textContent = highScore;
+            startScreen.classList.remove('hidden');
+            gameOverScreen.classList.add('hidden');
+            pauseScreen.classList.add('hidden');
+            
+            // Create player car
+            function createPlayerCar() {
+                playerCar = document.createElement('div');
+                playerCar.className = 'car';
+                playerCar.id = 'player-car';
+                playerCar.style.left = '130px';
+                playerCar.style.bottom = '20px';
+                playerCar.style.backgroundImage = 'url("https://cdn-icons-png.flaticon.com/512/744/744465.png")';
+                road.appendChild(playerCar);
+            }
+            
+            // Create lanes
+            function createLanes() {
+                // Clear existing lanes
+                lanes.forEach(lane => lane.remove());
+                lanes = [];
+                
+                // Create new lanes
+                for (let i = 0; i < 5; i++) {
+                    const lane1 = document.createElement('div');
+                    lane1.className = 'lane';
+                    lane1.style.left = '95px';
+                    lane1.style.top = `${-60 * i}px`;
+                    road.appendChild(lane1);
+                    lanes.push(lane1);
+                    
+                    const lane2 = document.createElement('div');
+                    lane2.className = 'lane';
+                    lane2.style.left = '195px';
+                    lane2.style.top = `${-60 * i}px`;
+                    road.appendChild(lane2);
+                    lanes.push(lane2);
+                }
+            }
+            
+            // Move lanes
+            function moveLanes() {
+                lanes.forEach(lane => {
+                    const currentTop = parseInt(lane.style.top);
+                    lane.style.top = `${currentTop + speed}px`;
+                    
+                    // Reset lane position when it goes off screen
+                    if (currentTop > 400) {
+                        lane.style.top = '-60px';
+                    }
+                });
+            }
+            
+            // Create obstacle
+            function createObstacle() {
+                const obstacle = document.createElement('div');
+                obstacle.className = 'obstacle';
+                
+                // Random lane (left, middle, right)
+                const lanes = [70, 130, 190];
+                const randomLane = lanes[Math.floor(Math.random() * lanes.length)];
+                
+                obstacle.style.left = `${randomLane}px`;
+                obstacle.style.top = '-40px';
+                obstacle.id = `obstacle-${Date.now()}`;
+                road.appendChild(obstacle);
+                obstacles.push(obstacle);
+                
+                // Remove obstacle when it goes off screen
+                const checkObstacle = setInterval(() => {
+                    if (!gameRunning || gamePaused) return;
+                    
+                    const currentTop = parseInt(obstacle.style.top);
+                    obstacle.style.top = `${currentTop + speed}px`;
+                    
+                    // Check collision
+                    if (checkCollision(playerCar, obstacle)) {
+                        endGame();
+                        clearInterval(checkObstacle);
+                        return;
+                    }
+                    
+                    // Remove obstacle when off screen
+                    if (currentTop > 400) {
+                        obstacle.remove();
+                        obstacles = obstacles.filter(o => o.id !== obstacle.id);
+                        clearInterval(checkObstacle);
+                    }
+                }, 20);
+            }
+            
+            // Check collision
+            function checkCollision(car, obstacle) {
+                const carRect = car.getBoundingClientRect();
+                const obstacleRect = obstacle.getBoundingClientRect();
+                
+                return !(
+                    carRect.right < obstacleRect.left || 
+                    carRect.left > obstacleRect.right || 
+                    carRect.bottom < obstacleRect.top || 
+                    carRect.top > obstacleRect.bottom
+                );
+            }
+            
+            // Move car
+            function moveCar(direction) {
+                if (!gameRunning || gamePaused) return;
+                
+                const currentLeft = parseInt(playerCar.style.left);
+                const currentBottom = parseInt(playerCar.style.bottom);
+                
+                switch (direction) {
+                    case 'left':
+                        if (currentLeft > 70) {
+                            playerCar.style.left = `${currentLeft - 60}px`;
+                        } else {
+                            playerCar.classList.add('animate-shake');
+                            setTimeout(() => {
+                                playerCar.classList.remove('animate-shake');
+                            }, 500);
+                        }
+                        break;
+                    case 'right':
+                        if (currentLeft < 190) {
+                            playerCar.style.left = `${currentLeft + 60}px`;
+                        } else {
+                            playerCar.classList.add('animate-shake');
+                            setTimeout(() => {
+                                playerCar.classList.remove('animate-shake');
+                            }, 500);
+                        }
+                        break;
+                    case 'up':
+                        if (currentBottom < 300) {
+                            playerCar.style.bottom = `${currentBottom + 30}px`;
+                        }
+                        break;
+                    case 'down':
+                        if (currentBottom > 20) {
+                            playerCar.style.bottom = `${currentBottom - 30}px`;
+                        }
+                        break;
+                }
+            }
+            
+            // Increase score
+            function increaseScore() {
+                score++;
+                carScore.textContent = score;
+                
+                // Increase speed every 10 points
+                if (score % 10 === 0) {
+                    speed += 0.5;
+                }
+            }
+            
+            // Start game
+            function startGame() {
+                // Clear road
+                road.innerHTML = '';
+                
+                // Reset variables
+                score = 0;
+                speed = 2;
+                obstacles = [];
+                gameRunning = true;
+                gamePaused = false;
+                
+                // Update UI
+                carScore.textContent = score;
+                startScreen.classList.add('hidden');
+                gameOverScreen.classList.add('hidden');
+                pauseScreen.classList.add('hidden');
+                
+                // Create elements
+                createPlayerCar();
+                createLanes();
+                
+                // Start game loop
+                gameInterval = setInterval(() => {
+                    if (gamePaused) return;
+                    moveLanes();
+                    increaseScore();
+                }, 20);
+                
+                // Start obstacle generation
+                obstacleInterval = setInterval(() => {
+                    if (gamePaused) return;
+                    createObstacle();
+                }, 2000);
+            }
+            
+            // Pause game
+            function pauseGame() {
+                gamePaused = true;
+                pauseScreen.classList.remove('hidden');
+            }
+            
+            // Resume game
+            function resumeGame() {
+                gamePaused = false;
+                pauseScreen.classList.add('hidden');
+            }
+            
+            // End game
+            function endGame() {
+                gameRunning = false;
+                gamePaused = false;
+                
+                // Clear intervals
+                clearInterval(gameInterval);
+                clearInterval(obstacleInterval);
+                
+                // Update high score
+                if (score > highScore) {
+                    highScore = score;
+                    highScoreDisplay.textContent = highScore;
+                    localStorage.setItem('carGameHighScore', highScore);
+                }
+                
+                // Show game over screen
+                finalScore.textContent = score;
+                gameOverScreen.classList.remove('hidden');
+            }
+            
+            // Event listeners
+            startBtn.addEventListener('click', startGame);
+            restartCarBtn.addEventListener('click', startGame);
+            resumeBtn.addEventListener('click', resumeGame);
+            restartFromPauseBtn.addEventListener('click', startGame);
+            pauseBtn.addEventListener('click', () => {
+                if (gamePaused) {
+                    resumeGame();
+                } else {
+                    pauseGame();
                 }
             });
             
-            // Car Game
-            document.getElementById('back-btn-car').addEventListener('click', goHome);
-            document.getElementById('start-btn').addEventListener('click', startCarGame);
-            document.getElementById('restart-car-btn').addEventListener('click', startCarGame);
-            document.getElementById('
+            // Button controls
+            leftBtn.addEventListener('click', () => moveCar('left'));
+            rightBtn.addEventListener('click', () => moveCar('right'));
+            upBtn.addEventListener('click', () => moveCar('up'));
+            downBtn.addEventListener('click', () => moveCar('down'));
+            
+            // Keyboard controls
+            document.addEventListener('keydown', (e) => {
+                if (!gameRunning || gamePaused) return;
+                
+                switch (e.key) {
+                    case 'ArrowLeft':
+                        moveCar('left');
+                        break;
+                    case 'ArrowRight':
+                        moveCar('right');
+                        break;
+                    case 'ArrowUp':
+                        moveCar('up');
+                        break;
+                    case 'ArrowDown':
+                        moveCar('down');
+                        break;
+                    case ' ':
+                        pauseGame();
+                        break;
+                }
+            });
+        }
+        
+        // Initialize home screen
+        showScreen('home');
+    </script>
+</body>
 </html>

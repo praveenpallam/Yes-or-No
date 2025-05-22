@@ -2,107 +2,125 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>FunBot - Premium Chat</title>
+  <title>FunBot AI Chat</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <script src="https://unpkg.com/rivescript@2.2.0/dist/rivescript.min.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <style>
-    * { box-sizing: border-box; }
+    :root {
+      --user-bg: #dbeafe;
+      --bot-bg: #dcfce7;
+      --bg: #fefefe;
+      --text: #222;
+    }
+
+    body.dark {
+      --bg: #1e1e1e;
+      --text: #eaeaea;
+      --user-bg: #263238;
+      --bot-bg: #2e7d32;
+    }
+
     body {
       margin: 0;
-      font-family: 'Inter', sans-serif;
-      background: linear-gradient(to bottom, #1e1e2f, #2e2e48);
-      color: #fff;
-      display: flex;
-      flex-direction: column;
-      height: 100vh;
-    }
-    header {
-      background-color: #111827;
       padding: 1em;
+      font-family: "Segoe UI", sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+    }
+
+    #container {
+      max-width: 600px;
+      margin: auto;
+    }
+
+    h1 {
       text-align: center;
-      font-size: 1.4em;
-      font-weight: 600;
-      color: #10b981;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
     }
+
     #chat {
-      flex: 1;
+      height: 70vh;
       overflow-y: auto;
+      border: 1px solid #ccc;
+      border-radius: 12px;
       padding: 1em;
-      background: url('https://www.transparenttextures.com/patterns/black-linen.png');
-      background-size: cover;
+      background: white;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      background-color: var(--bg);
     }
-    .msg {
-      max-width: 75%;
-      padding: 0.8em 1.2em;
+
+    .user, .bot {
+      padding: 0.7em 1em;
+      border-radius: 12px;
       margin: 0.5em 0;
-      border-radius: 18px;
-      word-wrap: break-word;
-      clear: both;
-      font-size: 0.95em;
-      line-height: 1.4;
+      max-width: 80%;
+      line-height: 1.4em;
     }
+
     .user {
-      background: #10b981;
-      color: #fff;
+      background-color: var(--user-bg);
+      align-self: flex-end;
       margin-left: auto;
-      text-align: right;
     }
+
     .bot {
-      background: #374151;
-      color: #f9fafb;
-      margin-right: auto;
-      text-align: left;
+      background-color: var(--bot-bg);
+      align-self: flex-start;
     }
+
     #controls {
       display: flex;
-      padding: 0.75em;
-      background-color: #1f2937;
-      border-top: 1px solid #374151;
+      gap: 0.5em;
+      margin-top: 1em;
     }
+
     #input {
-      flex: 1;
-      padding: 0.7em 1em;
-      border: none;
-      border-radius: 24px;
-      font-size: 1em;
-      background: #111827;
-      color: #fff;
-      outline: none;
-      margin-right: 0.5em;
+      flex-grow: 1;
+      padding: 0.6em;
+      border: 1px solid #aaa;
+      border-radius: 8px;
     }
+
     button {
-      border: none;
-      background: #10b981;
-      color: white;
       padding: 0.6em 1em;
-      border-radius: 24px;
-      font-size: 1em;
+      background: #3b82f6;
+      color: white;
+      border: none;
+      border-radius: 8px;
       cursor: pointer;
-      transition: background 0.3s;
     }
-    button:hover { background: #059669; }
+
+    button:hover {
+      background: #2563eb;
+    }
+
+    .dark #chat {
+      border-color: #444;
+    }
+
     @media screen and (max-width: 600px) {
-      .msg { max-width: 90%; }
+      h1 { font-size: 1.2em; }
+      #chat { height: 60vh; }
+      #controls { flex-direction: column; }
+      button { width: 100%; }
     }
   </style>
 </head>
 <body>
-  <header>💎 FunBot Premium</header>
-  <div id="chat"></div>
-  <div id="controls">
-    <input id="input" placeholder="Ask me anything..." />
-    <button onclick="send()">Send</button>
-    <button onclick="startVoice()">🎤</button>
+  <div id="container">
+    <h1>🤖 FunBot AI Chat</h1>
+    <div id="chat"></div>
+
+    <div id="controls">
+      <input id="input" placeholder="Type a message..." />
+      <button onclick="send()">Send</button>
+      <button onclick="toggleDarkMode()">🌓</button>
+    </div>
   </div>
 
   <audio id="ping" src="https://assets.mixkit.co/sfx/preview/mixkit-confirmation-tone-2867.mp3" preload="auto"></audio>
 
   <script>
     const bot = new RiveScript();
-    let username = "";
-
     bot.loadFile("brain.rive").then(() => bot.sortReplies());
 
     const chat = document.getElementById("chat");
@@ -110,45 +128,33 @@
 
     function append(role, text) {
       const msg = document.createElement("div");
-      msg.className = `msg ${role}`;
-      msg.textContent = text;
+      msg.className = role;
       chat.appendChild(msg);
-      chat.scrollTop = chat.scrollHeight;
+      let i = 0;
+      const typing = setInterval(() => {
+        if (i < text.length) {
+          msg.textContent += text.charAt(i++);
+          chat.scrollTop = chat.scrollHeight;
+        } else {
+          clearInterval(typing);
+        }
+      }, 20);
     }
 
     function send() {
-      const text = input.value.trim();
-      if (!text) return;
-
-      append("user", text);
+      const msg = input.value.trim();
+      if (!msg) return;
+      append("user", msg);
       input.value = "";
 
-      const context = username ? `name=${username}` : "";
-      bot.reply("local-user", text, context).then(reply => {
+      bot.reply("user", msg).then(reply => {
         document.getElementById("ping").play();
         append("bot", reply);
-
-        if (text.toLowerCase().startsWith("my name is")) {
-          username = text.split(" ").slice(-1)[0];
-        }
       });
     }
 
-    function startVoice() {
-      if (!window.SpeechRecognition && !window.webkitSpeechRecognition) {
-        alert("Speech recognition not supported");
-        return;
-      }
-
-      const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-      recognition.lang = 'en-US';
-      recognition.start();
-
-      recognition.onresult = (event) => {
-        const voiceText = event.results[0][0].transcript;
-        input.value = voiceText;
-        send();
-      };
+    function toggleDarkMode() {
+      document.body.classList.toggle("dark");
     }
 
     input.addEventListener("keydown", e => {

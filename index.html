@@ -2,125 +2,113 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>FunBot AI Chat</title>
+  <title>FunBot WhatsApp Style</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <script src="https://unpkg.com/rivescript@2.2.0/dist/rivescript.min.js"></script>
   <style>
-    :root {
-      --user-bg: #dbeafe;
-      --bot-bg: #dcfce7;
-      --bg: #fefefe;
-      --text: #222;
-    }
-
-    body.dark {
-      --bg: #1e1e1e;
-      --text: #eaeaea;
-      --user-bg: #263238;
-      --bot-bg: #2e7d32;
+    * {
+      box-sizing: border-box;
     }
 
     body {
       margin: 0;
-      padding: 1em;
       font-family: "Segoe UI", sans-serif;
-      background-color: var(--bg);
-      color: var(--text);
-    }
-
-    #container {
-      max-width: 600px;
-      margin: auto;
-    }
-
-    h1 {
-      text-align: center;
+      background-color: #ece5dd;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
     }
 
     #chat {
-      height: 70vh;
+      flex: 1;
       overflow-y: auto;
-      border: 1px solid #ccc;
-      border-radius: 12px;
       padding: 1em;
-      background: white;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-      background-color: var(--bg);
+      background-image: url('https://www.transparenttextures.com/patterns/paper-fibers.png');
+      background-size: cover;
     }
 
-    .user, .bot {
+    .msg {
+      max-width: 70%;
       padding: 0.7em 1em;
-      border-radius: 12px;
       margin: 0.5em 0;
-      max-width: 80%;
-      line-height: 1.4em;
+      border-radius: 12px;
+      word-wrap: break-word;
+      clear: both;
     }
 
     .user {
-      background-color: var(--user-bg);
-      align-self: flex-end;
+      background-color: #dcf8c6;
       margin-left: auto;
+      text-align: right;
     }
 
     .bot {
-      background-color: var(--bot-bg);
-      align-self: flex-start;
+      background-color: #ffffff;
+      margin-right: auto;
+      text-align: left;
     }
 
     #controls {
       display: flex;
-      gap: 0.5em;
-      margin-top: 1em;
+      padding: 0.6em;
+      background-color: #f0f0f0;
+      border-top: 1px solid #ccc;
     }
 
     #input {
-      flex-grow: 1;
+      flex: 1;
       padding: 0.6em;
-      border: 1px solid #aaa;
-      border-radius: 8px;
+      border: none;
+      border-radius: 20px;
+      margin-right: 0.5em;
+      font-size: 1em;
     }
 
     button {
-      padding: 0.6em 1em;
-      background: #3b82f6;
-      color: white;
       border: none;
-      border-radius: 8px;
+      background: #128c7e;
+      color: white;
+      padding: 0.6em 1em;
+      border-radius: 20px;
+      font-size: 1em;
       cursor: pointer;
     }
 
     button:hover {
-      background: #2563eb;
+      background: #075e54;
     }
 
-    .dark #chat {
-      border-color: #444;
+    h1 {
+      background-color: #075e54;
+      color: white;
+      margin: 0;
+      padding: 1em;
+      text-align: center;
+      font-size: 1.2em;
     }
 
     @media screen and (max-width: 600px) {
-      h1 { font-size: 1.2em; }
-      #chat { height: 60vh; }
-      #controls { flex-direction: column; }
-      button { width: 100%; }
+      .msg {
+        max-width: 90%;
+      }
     }
   </style>
 </head>
 <body>
-  <div id="container">
-    <h1>🤖 FunBot AI Chat</h1>
-    <div id="chat"></div>
-
-    <div id="controls">
-      <input id="input" placeholder="Type a message..." />
-      <button onclick="send()">Send</button>
-      <button onclick="toggleDarkMode()">🌓</button>
-    </div>
+  <h1>FunBot 💬</h1>
+  <div id="chat"></div>
+  <div id="controls">
+    <input id="input" placeholder="Type a message" />
+    <button onclick="send()">Send</button>
+    <button onclick="startVoice()">🎤</button>
   </div>
 
   <audio id="ping" src="https://assets.mixkit.co/sfx/preview/mixkit-confirmation-tone-2867.mp3" preload="auto"></audio>
 
   <script>
     const bot = new RiveScript();
+    let username = "";
+
     bot.loadFile("brain.rive").then(() => bot.sortReplies());
 
     const chat = document.getElementById("chat");
@@ -128,33 +116,45 @@
 
     function append(role, text) {
       const msg = document.createElement("div");
-      msg.className = role;
+      msg.className = `msg ${role}`;
+      msg.textContent = text;
       chat.appendChild(msg);
-      let i = 0;
-      const typing = setInterval(() => {
-        if (i < text.length) {
-          msg.textContent += text.charAt(i++);
-          chat.scrollTop = chat.scrollHeight;
-        } else {
-          clearInterval(typing);
-        }
-      }, 20);
+      chat.scrollTop = chat.scrollHeight;
     }
 
     function send() {
-      const msg = input.value.trim();
-      if (!msg) return;
-      append("user", msg);
+      const text = input.value.trim();
+      if (!text) return;
+
+      append("user", text);
       input.value = "";
 
-      bot.reply("user", msg).then(reply => {
+      const context = username ? `name=${username}` : "";
+      bot.reply("local-user", text, context).then(reply => {
         document.getElementById("ping").play();
         append("bot", reply);
+
+        if (text.toLowerCase().startsWith("my name is")) {
+          username = text.split(" ").slice(-1)[0];
+        }
       });
     }
 
-    function toggleDarkMode() {
-      document.body.classList.toggle("dark");
+    function startVoice() {
+      if (!window.SpeechRecognition && !window.webkitSpeechRecognition) {
+        alert("Speech recognition not supported");
+        return;
+      }
+
+      const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+      recognition.lang = 'en-US';
+      recognition.start();
+
+      recognition.onresult = (event) => {
+        const voiceText = event.results[0][0].transcript;
+        input.value = voiceText;
+        send();
+      };
     }
 
     input.addEventListener("keydown", e => {

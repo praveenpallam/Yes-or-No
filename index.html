@@ -3,411 +3,331 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Game Center</title>
+    <title>Snake Game</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        accenture: {
-                            primary: '#A100FF',
-                            dark: '#7B00C7',
-                            light: '#D9B3FF',
-                            bg: '#F5F0FF'
-                        },
-                        racing: {
-                            primary: '#FF5E00',
-                            dark: '#CC4B00',
-                            light: '#FFB38A',
-                            bg: '#FFF5F0'
-                        },
-                        neon: {
-                            primary: '#39ff14',
-                            blue: '#00e5ff',
-                            pink: '#ff2ced',
-                            purple: '#9d00ff',
-                            dark: '#0f0f1a'
-                        }
-                    },
-                    // Keep your previous keyframes/animations
-                    keyframes: {
-                        'fade-in': {
-                            '0%': { opacity: '0', transform: 'translateY(10px)' },
-                            '100%': { opacity: '1', transform: 'translateY(0)' }
-                        },
-                        'bounce': {
-                            '0%, 100%': { transform: 'translateY(-5%)' },
-                            '50%': { transform: 'translateY(0)' }
-                        },
-                        'pulse': {
-                            '0%, 100%': { opacity: '1' },
-                            '50%': { opacity: '0.5' }
-                        },
-                        'shake': {
-                            '0%, 100%': { transform: 'translateX(0)' },
-                            '10%, 30%, 50%, 70%, 90%': { transform: 'translateX(-5px)' },
-                            '20%, 40%, 60%, 80%': { transform: 'translateX(5px)' }
-                        }
-                    },
-                    animation: {
-                        'fade-in': 'fade-in 0.3s ease-out forwards',
-                        'bounce': 'bounce 1s infinite',
-                        'pulse': 'pulse 1.5s infinite',
-                        'shake': 'shake 0.5s'
-                    }
-                }
-            }
-        }
-    </script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* Game Center and existing games styles ... (keep as is) */
-        .game-header { background: linear-gradient(90deg, var(--tw-gradient-from) 0%, var(--tw-gradient-to) 100%);}
-        .messages-container::-webkit-scrollbar {width: 6px;}
-        .messages-container::-webkit-scrollbar-thumb {background: #A100FF; border-radius: 10px;}
-        .score-bar {height: 6px; transition: width 0.5s ease;}
-        .confetti {position: absolute; width: 10px; height: 10px; opacity: 0;}
-        @keyframes confetti-fall {0% {transform: translateY(-100vh) rotate(0deg);opacity: 1;}100% {transform: translateY(100vh) rotate(360deg);opacity: 0;}}
-        #road {position: relative;width: 300px;height: 400px;background-color: #333;overflow: hidden;margin: 0 auto;border-radius: 10px;}
-        .car {position: absolute;width: 40px;height: 70px;background-size: contain;background-repeat: no-repeat;background-position: center;z-index: 10;}
-        .obstacle {position: absolute;width: 40px;height: 40px;background-color: red;border-radius: 5px;z-index: 5;}
-        .lane {position: absolute;width: 10px;height: 60px;background-color: yellow;}
-        .game-btn {transition: all 0.2s;}
-        .game-btn:active {transform: scale(0.95);}
-        /* Neon Snake styles */
-        .neon-bg { background: #0f0f1a !important; }
-        .neon-container {
-            position: relative;
-            width: 90vmin; max-width: 600px; height: 90vmin; max-height: 600px;
-            border: 4px solid #9d00ff; border-radius: 8px; box-shadow: 0 0 20px #9d00ff, inset 0 0 20px #9d00ff;
-            overflow: hidden; background: rgba(15,15,26,0.8);
-            margin: 0 auto;
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
         }
-        #neon-canvas { width: 100%; height: 100%; display: block; }
-        .snake-segment { position: absolute; width: 20px; height: 20px; background: #39ff14; border-radius: 4px; box-shadow:0 0 10px #39ff14; transition: transform 0.1s;}
-        .snake-head { background: #00e5ff; box-shadow: 0 0 15px #00e5ff; z-index: 10;}
-        .neon-food { position: absolute; width: 20px; height: 20px; background: #ff2ced; border-radius: 50%; box-shadow: 0 0 15px #ff2ced; animation: pulse 1.5s infinite alternate;}
-        @keyframes pulse {0%{transform:scale(1);opacity:1;}100%{transform:scale(1.2);opacity:0.8;}}
-        .neon-score { font-family: 'Press Start 2P', cursive; font-size: 1.2rem; color: #39ff14; text-shadow: 0 0 10px #39ff14; margin-bottom: 1rem;}
-        .neon-modal { position: fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.8); display: flex; align-items:center; justify-content:center; z-index:100; opacity:0; pointer-events:none; transition: opacity 0.3s;}
-        .neon-modal.active { opacity:1; pointer-events:all;}
-        .neon-modal-content { background:#0f0f1a; border:3px solid #9d00ff; border-radius:8px; padding:2rem; max-width:400px; width:90%; text-align:center; box-shadow:0 0 30px #9d00ff;}
-        .neon-game-over { color: #ff2ced; font-size: 2rem; margin-bottom: 1rem; text-shadow: 0 0 10px #ff2ced; }
-        .neon-controls .btn { margin: .5rem; }
-        @media (max-width: 768px) { .neon-score { font-size:1rem; } }
+        .pulse-animation {
+            animation: pulse 1.5s infinite;
+        }
+        #game-board {
+            border: 2px solid #4b5563;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        .snake-segment {
+            transition: all 0.1s ease;
+        }
+        .food {
+            animation: spin 3s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        #direction-arrow {
+            width: 48px;
+            height: 48px;
+            margin: 0 auto 1rem auto;
+            display: block;
+        }
     </style>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Orbitron:wght@400;700&display=swap">
 </head>
-<body class="bg-gray-100 font-sans">
-    <!-- Home Screen -->
-    <div id="home-screen" class="max-w-md mx-auto min-h-screen flex flex-col">
-        <div class="p-6 flex-1 flex flex-col justify-center">
-            <div class="text-center mb-8">
-                <div class="w-20 h-20 rounded-full bg-accenture-primary mx-auto flex items-center justify-center mb-4 animate-bounce">
-                    <i class="fas fa-gamepad text-white text-3xl"></i>
-                </div>
-                <h1 class="text-3xl font-bold text-gray-800 mb-2">Game Center</h1>
-                <p class="text-gray-600">Choose your game adventure!</p>
+<body class="bg-gray-900 text-white min-h-screen flex flex-col items-center justify-center p-4">
+    <div class="text-center mb-8">
+        <h1 class="text-4xl md:text-5xl font-bold mb-2 text-green-400">Snake Game</h1>
+        <p class="text-gray-400 mb-6">Use arrow keys to control the snake</p>
+        
+        <div class="flex justify-center gap-8 mb-6">
+            <div class="bg-gray-800 p-4 rounded-lg">
+                <p class="text-gray-400">Score</p>
+                <p id="score" class="text-2xl font-bold text-green-400">0</p>
             </div>
-            <div class="space-y-4">
-                <div id="yes-no-game-btn" class="bg-white p-4 rounded-xl shadow-md flex items-center cursor-pointer hover:shadow-lg transition-shadow" onclick="loadGame('yes-no')">
-                    <div class="w-12 h-12 rounded-lg bg-accenture-primary flex items-center justify-center mr-4">
-                        <i class="fas fa-question text-white text-xl"></i>
-                    </div>
-                    <div>
-                        <h3 class="font-bold text-gray-800">Yes or No Quiz</h3>
-                        <p class="text-sm text-gray-600">Test your knowledge with simple questions</p>
-                    </div>
-                    <div class="ml-auto">
-                        <i class="fas fa-chevron-right text-gray-400"></i>
-                    </div>
-                </div>
-                <div id="car-game-btn" class="bg-white p-4 rounded-xl shadow-md flex items-center cursor-pointer hover:shadow-lg transition-shadow" onclick="loadGame('car')">
-                    <div class="w-12 h-12 rounded-lg bg-racing-primary flex items-center justify-center mr-4">
-                        <i class="fas fa-car text-white text-xl"></i>
-                    </div>
-                    <div>
-                        <h3 class="font-bold text-gray-800">Speed Racer</h3>
-                        <p class="text-sm text-gray-600">Dodge obstacles in this fast-paced game</p>
-                    </div>
-                    <div class="ml-auto">
-                        <i class="fas fa-chevron-right text-gray-400"></i>
-                    </div>
-                </div>
-                <!-- NEW: Neon Snake Game Button -->
-                <div id="neon-snake-game-btn" class="bg-white p-4 rounded-xl shadow-md flex items-center cursor-pointer hover:shadow-lg transition-shadow" onclick="loadGame('neon-snake')">
-                    <div class="w-12 h-12 rounded-lg bg-neon-blue flex items-center justify-center mr-4" style="background:#00e5ff;">
-                        <i class="fas fa-egg text-white text-xl"></i>
-                    </div>
-                    <div>
-                        <h3 class="font-bold text-gray-800">Neon Snake</h3>
-                        <p class="text-sm text-gray-600">Classic snake with neon glow!</p>
-                    </div>
-                    <div class="ml-auto">
-                        <i class="fas fa-chevron-right text-gray-400"></i>
-                    </div>
-                </div>
+            <div class="bg-gray-800 p-4 rounded-lg">
+                <p class="text-gray-400">High Score</p>
+                <p id="high-score" class="text-2xl font-bold text-yellow-400">0</p>
             </div>
         </div>
-        <div class="p-4 text-center text-gray-500 text-sm"><p>Game Center © 2023</p></div>
     </div>
 
-    <!-- Yes/No Game Screen (keep as is) -->
-    <div id="yes-no-game" class="max-w-md mx-auto bg-white shadow-lg rounded-lg overflow-hidden h-screen flex flex-col hidden">
-        <!-- ... (unchanged, as in your code) ... -->
+    <!-- Direction Arrow Indicator -->
+    <div id="arrow-container" class="mb-2">
+        <svg id="direction-arrow" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 48 48" stroke="currentColor">
+            <g id="arrow-group">
+                <!-- Default UP arrow -->
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="4" d="M24 40V8M24 8l-8 8M24 8l8 8"/>
+            </g>
+        </svg>
     </div>
-    <!-- Car Game Screen (keep as is) -->
-    <div id="car-game" class="max-w-md mx-auto bg-white shadow-lg rounded-lg overflow-hidden h-screen flex flex-col hidden">
-        <!-- ... (unchanged, as in your code) ... -->
-    </div>
-    <!-- Neon Snake Game Screen (NEW) -->
-    <div id="neon-snake-game" class="max-w-md mx-auto neon-bg overflow-hidden h-screen flex flex-col hidden">
-        <div class="flex flex-row items-center justify-between px-6 py-4">
-            <button id="back-btn-neon" class="w-8 h-8 rounded-full bg-white/20 text-white flex items-center justify-center hover:bg-white/30 transition-colors">
-                <i class="fas fa-arrow-left"></i>
+
+    <div class="relative">
+        <canvas id="game-board" width="400" height="400" class="bg-gray-800 rounded-lg"></canvas>
+        
+        <div id="game-over" class="hidden absolute inset-0 bg-black bg-opacity-70 flex flex-col items-center justify-center rounded-lg">
+            <h2 class="text-3xl font-bold text-red-500 mb-4">Game Over!</h2>
+            <p class="text-xl mb-6">Your score: <span id="final-score" class="text-green-400">0</span></p>
+            <button id="restart-btn" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-6 rounded-full transition-all pulse-animation">
+                Play Again
             </button>
-            <h1 class="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-blue-500 select-none">NEON SNAKE</h1>
-            <span style="width:2rem"></span>
         </div>
-        <div class="flex-1 flex flex-col items-center justify-center">
-            <div class="neon-score">
-                SCORE: <span id="neon-score">0</span> | HIGH: <span id="neon-high-score">0</span>
-            </div>
-            <div class="neon-container">
-                <canvas id="neon-canvas"></canvas>
-                <div id="neon-game-elements"></div>
-            </div>
-            <div class="neon-controls mt-4 flex flex-row items-center justify-center">
-                <button id="neon-start-btn" class="btn bg-neon-blue text-black px-4 py-1 rounded shadow" style="background:#00e5ff;">START</button>
-                <button id="neon-pause-btn" class="btn bg-neon-blue text-black px-4 py-1 rounded shadow" style="background:#00e5ff;" disabled>PAUSE</button>
-                <button id="neon-restart-btn" class="btn bg-neon-blue text-black px-4 py-1 rounded shadow" style="background:#00e5ff;">RESTART</button>
-            </div>
+        
+        <div id="start-screen" class="absolute inset-0 bg-black bg-opacity-70 flex flex-col items-center justify-center rounded-lg">
+            <h2 class="text-3xl font-bold text-green-400 mb-4">Ready to Play?</h2>
+            <p class="text-gray-300 mb-8 text-center max-w-md px-4">
+                Eat the food to grow. Avoid hitting the walls or yourself!
+            </p>
+            <button id="start-btn" class="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-8 rounded-full text-lg transition-all pulse-animation">
+                Start Game
+            </button>
         </div>
-        <div class="neon-modal" id="neon-game-over-modal">
-            <div class="neon-modal-content">
-                <div class="neon-game-over">GAME OVER!</div>
-                <h2 class="modal-title">Your Score: <span id="neon-final-score">0</span></h2>
-                <button id="neon-play-again-btn" class="btn bg-neon-blue text-black px-4 py-1 rounded shadow" style="background:#00e5ff;">
-                    <i class="fas fa-gamepad mr-2"></i> PLAY AGAIN
-                </button>
-            </div>
-        </div>
-        <div class="absolute bottom-4 right-4 text-xs text-gray-300 select-none">Use arrow keys or swipe to control</div>
     </div>
+
+    <div class="mt-8 grid grid-cols-3 gap-2 max-w-xs mx-auto">
+        <div></div>
+        <button id="up-btn" class="bg-gray-700 hover:bg-gray-600 text-white p-3 rounded-lg flex items-center justify-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
+            </svg>
+        </button>
+        <div></div>
+        <button id="left-btn" class="bg-gray-700 hover:bg-gray-600 text-white p-3 rounded-lg flex items-center justify-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+            </svg>
+        </button>
+        <button id="down-btn" class="bg-gray-700 hover:bg-gray-600 text-white p-3 rounded-lg flex items-center justify-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+        </button>
+        <button id="right-btn" class="bg-gray-700 hover:bg-gray-600 text-white p-3 rounded-lg flex items-center justify-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+        </button>
+    </div>
+
     <script>
-        // --- Navigation logic (update to handle neon-snake) ---
-        let currentScreen = 'home';
-        const homeScreen = document.getElementById('home-screen');
-        const yesNoGame = document.getElementById('yes-no-game');
-        const carGame = document.getElementById('car-game');
-        const neonSnakeGame = document.getElementById('neon-snake-game');
-        function showScreen(screen) {
-            homeScreen.classList.add('hidden');
-            yesNoGame.classList.add('hidden');
-            carGame.classList.add('hidden');
-            neonSnakeGame.classList.add('hidden');
-            currentScreen = screen;
-            if (screen === 'home') homeScreen.classList.remove('hidden');
-            else if (screen === 'yes-no') { yesNoGame.classList.remove('hidden'); initYesNoGame(); }
-            else if (screen === 'car') { carGame.classList.remove('hidden'); initCarGame(); }
-            else if (screen === 'neon-snake') { neonSnakeGame.classList.remove('hidden'); initNeonSnakeGame(); }
-        }
-        function loadGame(game) { showScreen(game); }
-        document.getElementById('back-btn-yesno').addEventListener('click', () => showScreen('home'));
-        document.getElementById('back-btn-car').addEventListener('click', () => showScreen('home'));
-        document.getElementById('back-btn-neon').addEventListener('click', () => showScreen('home'));
-        // --- Your Yes/No Game and Car Game init code here (unchanged) ---
-        // --- Neon Snake Game logic ---
-        function initNeonSnakeGame() {
-            // Elements
-            const canvas = document.getElementById('neon-canvas');
+        document.addEventListener('DOMContentLoaded', () => {
+            const canvas = document.getElementById('game-board');
             const ctx = canvas.getContext('2d');
-            const gameElements = document.getElementById('neon-game-elements');
-            const scoreDisplay = document.getElementById('neon-score');
-            const highScoreDisplay = document.getElementById('neon-high-score');
-            const finalScoreDisplay = document.getElementById('neon-final-score');
-            const startBtn = document.getElementById('neon-start-btn');
-            const pauseBtn = document.getElementById('neon-pause-btn');
-            const restartBtn = document.getElementById('neon-restart-btn');
-            const playAgainBtn = document.getElementById('neon-play-again-btn');
-            const gameOverModal = document.getElementById('neon-game-over-modal');
-            // Game settings
+            const scoreDisplay = document.getElementById('score');
+            const highScoreDisplay = document.getElementById('high-score');
+            const finalScoreDisplay = document.getElementById('final-score');
+            const gameOverScreen = document.getElementById('game-over');
+            const startScreen = document.getElementById('start-screen');
+            const startBtn = document.getElementById('start-btn');
+            const restartBtn = document.getElementById('restart-btn');
+
+            // Direction Arrow Indicator
+            const directionArrow = document.getElementById('direction-arrow');
+            const arrowGroup = directionArrow.querySelector('#arrow-group');
+            const arrowPaths = {
+                'up':   '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="4" d="M24 40V8M24 8l-8 8M24 8l8 8"/>',
+                'down': '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="4" d="M24 8v32M24 40l8-8M24 40l-8-8"/>',
+                'left': '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="4" d="M40 24H8M8 24l8-8M8 24l8 8"/>',
+                'right':'<path stroke-linecap="round" stroke-linejoin="round" stroke-width="4" d="M8 24h32M40 24l-8-8M40 24l-8 8"/>'
+            };
+            let currentDirection = 'up';
+            function setArrowDirection(dir) {
+                arrowGroup.innerHTML = arrowPaths[dir];
+            }
+            setArrowDirection(currentDirection);
+
+            // Mobile controls
+            const upBtn = document.getElementById('up-btn');
+            const downBtn = document.getElementById('down-btn');
+            const leftBtn = document.getElementById('left-btn');
+            const rightBtn = document.getElementById('right-btn');
+            
             const gridSize = 20;
-            let canvasSize = Math.min(600, window.innerWidth - 40, window.innerHeight - 220);
-            canvas.width = canvasSize;
-            canvas.height = canvasSize;
-            // State
-            let snake = [];
-            let food = {};
-            let direction = 'right';
-            let nextDirection = 'right';
-            let gameSpeed = 150;
+            const tileCount = canvas.width / gridSize;
             let score = 0;
-            let highScore = localStorage.getItem('neonSnakeHighScore') || 0;
-            let gameInterval;
-            let isPaused = false;
-            let isGameOver = false;
-            let isGameRunning = false;
-            function initGame() {
-                gameElements.innerHTML = '';
-                snake = [{x:5, y:10}, {x:4, y:10}, {x:3, y:10}];
-                direction = 'right'; nextDirection = 'right';
+            let highScore = localStorage.getItem('snakeHighScore') || 0;
+            highScoreDisplay.textContent = highScore;
+            
+            let snake = [
+                {x: 10, y: 10}
+            ];
+            let velocityX = 0;
+            let velocityY = 0;
+            let foodX = 5;
+            let foodY = 5;
+            let gameSpeed = 150;
+            let gameRunning = false;
+            let gameLoop;
+            
+            // Colors
+            const snakeColor = '#10B981'; // Tailwind green-400
+            const foodColor = '#EF4444';  // Tailwind red-500
+            const headColor = '#059669';  // Tailwind green-600
+            
+            // Start game
+            startBtn.addEventListener('click', startGame);
+            restartBtn.addEventListener('click', startGame);
+            
+            // Keyboard controls
+            document.addEventListener('keydown', changeDirection);
+            
+            // Mobile controls
+            upBtn.addEventListener('click', () => changeDirection({key: 'ArrowUp'}));
+            downBtn.addEventListener('click', () => changeDirection({key: 'ArrowDown'}));
+            leftBtn.addEventListener('click', () => changeDirection({key: 'ArrowLeft'}));
+            rightBtn.addEventListener('click', () => changeDirection({key: 'ArrowRight'}));
+            
+            function startGame() {
+                snake = [{x: 10, y: 10}];
+                velocityX = 0;
+                velocityY = 0;
+                currentDirection = 'up';
+                setArrowDirection(currentDirection);
                 score = 0;
                 scoreDisplay.textContent = score;
-                highScoreDisplay.textContent = highScore;
-                generateFood();
-                isGameOver = false; isPaused = false;
-                gameOverModal.classList.remove('active');
-                render();
+                gameOverScreen.classList.add('hidden');
+                startScreen.classList.add('hidden');
+                placeFood();
+                gameRunning = true;
+                
+                if (gameLoop) clearInterval(gameLoop);
+                gameLoop = setInterval(gameUpdate, gameSpeed);
             }
-            function startGame() {
-                if (!isGameRunning) {
-                    isGameRunning = true;
-                    startBtn.disabled = true;
-                    pauseBtn.disabled = false;
-                    gameInterval = setInterval(gameLoop, gameSpeed);
+            
+            function gameUpdate() {
+                if (!gameRunning) return;
+                
+                // Clear canvas
+                ctx.fillStyle = '#1F2937'; // Tailwind gray-800
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                // Draw grid lines
+                ctx.strokeStyle = '#374151'; // Tailwind gray-700
+                ctx.lineWidth = 0.5;
+                for (let i = 0; i < tileCount; i++) {
+                    ctx.beginPath();
+                    ctx.moveTo(i * gridSize, 0);
+                    ctx.lineTo(i * gridSize, canvas.height);
+                    ctx.stroke();
+                    
+                    ctx.beginPath();
+                    ctx.moveTo(0, i * gridSize);
+                    ctx.lineTo(canvas.width, i * gridSize);
+                    ctx.stroke();
                 }
-            }
-            function pauseGame() {
-                if (isGameRunning && !isPaused) {
-                    isPaused = true;
-                    clearInterval(gameInterval);
-                    pauseBtn.textContent = 'RESUME';
-                } else if (isGameRunning && isPaused) {
-                    isPaused = false;
-                    gameInterval = setInterval(gameLoop, gameSpeed);
-                    pauseBtn.textContent = 'PAUSE';
-                }
-            }
-            function gameOver() {
-                isGameOver = true; isGameRunning = false;
-                clearInterval(gameInterval);
-                startBtn.disabled = false;
-                pauseBtn.disabled = true;
-                if (score > highScore) {
-                    highScore = score;
-                    localStorage.setItem('neonSnakeHighScore', highScore);
-                    highScoreDisplay.textContent = highScore;
-                }
-                finalScoreDisplay.textContent = score;
-                gameOverModal.classList.add('active');
-            }
-            function gameLoop() {
-                if (isPaused || isGameOver) return;
-                direction = nextDirection;
-                const head = {...snake[0]};
-                switch (direction) {
-                    case 'up': head.y -= 1; break;
-                    case 'down': head.y += 1; break;
-                    case 'left': head.x -= 1; break;
-                    case 'right': head.x += 1; break;
-                }
-                if (head.x < 0 || head.x >= canvas.width/gridSize || head.y < 0 || head.y >= canvas.height/gridSize || snake.some(seg=>seg.x===head.x&&seg.y===head.y)) {
-                    gameOver(); return;
-                }
+                
+                // Move snake
+                const head = {x: snake[0].x + velocityX, y: snake[0].y + velocityY};
                 snake.unshift(head);
-                if (head.x === food.x && head.y === food.y) {
-                    score += 10;
+                
+                // Check if snake ate food
+                if (head.x === foodX && head.y === foodY) {
+                    score++;
                     scoreDisplay.textContent = score;
-                    if (gameSpeed > 50 && score % 50 === 0) {
-                        gameSpeed -= 5;
-                        clearInterval(gameInterval);
-                        gameInterval = setInterval(gameLoop, gameSpeed);
+                    placeFood();
+                    
+                    if (score % 5 === 0) {
+                        clearInterval(gameLoop);
+                        gameSpeed = Math.max(gameSpeed - 5, 50);
+                        gameLoop = setInterval(gameUpdate, gameSpeed);
                     }
-                    generateFood();
                 } else {
                     snake.pop();
                 }
-                render();
+                
+                // Check collision
+                if (
+                    head.x < 0 || head.x >= tileCount || 
+                    head.y < 0 || head.y >= tileCount ||
+                    snake.slice(1).some(segment => segment.x === head.x && segment.y === head.y)
+                ) {
+                    gameOver();
+                    return;
+                }
+                
+                // Draw snake
+                snake.forEach((segment, index) => {
+                    ctx.fillStyle = index === 0 ? headColor : snakeColor;
+                    ctx.fillRect(segment.x * gridSize, segment.y * gridSize, gridSize, gridSize);
+                    ctx.strokeStyle = '#047857'; // Tailwind green-700
+                    ctx.lineWidth = 1;
+                    ctx.strokeRect(segment.x * gridSize, segment.y * gridSize, gridSize, gridSize);
+                });
+                
+                // Draw food
+                ctx.fillStyle = foodColor;
+                ctx.beginPath();
+                const centerX = foodX * gridSize + gridSize / 2;
+                const centerY = foodY * gridSize + gridSize / 2;
+                const radius = gridSize / 2 - 2;
+                ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+                ctx.fill();
+                
+                ctx.fillStyle = '#FECACA'; // Tailwind red-200
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, radius / 2, 0, Math.PI * 2);
+                ctx.fill();
             }
-            function generateFood() {
-                let newFood;
+            
+            function placeFood() {
+                let newFoodX, newFoodY;
                 do {
-                    newFood = {
-                        x: Math.floor(Math.random()*(canvas.width/gridSize)),
-                        y: Math.floor(Math.random()*(canvas.height/gridSize))
-                    };
-                } while (snake.some(seg=>seg.x===newFood.x&&seg.y===newFood.y));
-                food = newFood;
-                const foodElement = document.createElement('div');
-                foodElement.className = 'neon-food';
-                foodElement.style.left = `${food.x*gridSize}px`;
-                foodElement.style.top = `${food.y*gridSize}px`;
-                foodElement.style.width = `${gridSize}px`;
-                foodElement.style.height = `${gridSize}px`;
-                foodElement.id = 'neon-food';
-                gameElements.appendChild(foodElement);
+                    newFoodX = Math.floor(Math.random() * tileCount);
+                    newFoodY = Math.floor(Math.random() * tileCount);
+                } while (snake.some(segment => segment.x === newFoodX && segment.y === newFoodY));
+                foodX = newFoodX;
+                foodY = newFoodY;
             }
-            function render() {
-                ctx.clearRect(0,0,canvas.width,canvas.height);
-                snake.forEach((seg,idx) => {
-                    const segEl = document.createElement('div');
-                    segEl.className = idx === 0 ? 'snake-segment snake-head' : 'snake-segment';
-                    segEl.style.left = `${seg.x*gridSize}px`;
-                    segEl.style.top = `${seg.y*gridSize}px`;
-                    segEl.style.width = `${gridSize}px`;
-                    segEl.style.height = `${gridSize}px`;
-                    segEl.id = `neon-segment-${idx}`;
-                    const existing = document.getElementById(`neon-segment-${idx}`);
-                    if (existing) {
-                        existing.style.left = segEl.style.left;
-                        existing.style.top = segEl.style.top;
-                    } else {
-                        gameElements.appendChild(segEl);
-                    }
-                });
-                Array.from(document.querySelectorAll('.snake-segment')).forEach((el, i) => {
-                    if (i >= snake.length) el.remove();
-                });
-                const foodElement = document.getElementById('neon-food');
-                if (foodElement) {
-                    foodElement.style.left = `${food.x*gridSize}px`;
-                    foodElement.style.top = `${food.y*gridSize}px`;
+            
+            function changeDirection(e) {
+                if (!gameRunning && e.key) {
+                    startGame();
+                    return;
                 }
-            }
-            function handleKeyDown(e) {
-                if (!isGameRunning || isPaused) return;
                 switch (e.key) {
-                    case 'ArrowUp': if (direction !== 'down') nextDirection = 'up'; break;
-                    case 'ArrowDown': if (direction !== 'up') nextDirection = 'down'; break;
-                    case 'ArrowLeft': if (direction !== 'right') nextDirection = 'left'; break;
-                    case 'ArrowRight': if (direction !== 'left') nextDirection = 'right'; break;
+                    case 'ArrowUp':
+                        if (velocityY !== 1) {
+                            velocityX = 0;
+                            velocityY = -1;
+                            currentDirection = 'up'; setArrowDirection('up');
+                        }
+                        break;
+                    case 'ArrowDown':
+                        if (velocityY !== -1) {
+                            velocityX = 0;
+                            velocityY = 1;
+                            currentDirection = 'down'; setArrowDirection('down');
+                        }
+                        break;
+                    case 'ArrowLeft':
+                        if (velocityX !== 1) {
+                            velocityX = -1;
+                            velocityY = 0;
+                            currentDirection = 'left'; setArrowDirection('left');
+                        }
+                        break;
+                    case 'ArrowRight':
+                        if (velocityX !== -1) {
+                            velocityX = 1;
+                            velocityY = 0;
+                            currentDirection = 'right'; setArrowDirection('right');
+                        }
+                        break;
                 }
             }
-            let touchStartX = 0, touchStartY = 0;
-            function handleTouchStart(e) {touchStartX=e.touches[0].clientX;touchStartY=e.touches[0].clientY;}
-            function handleTouchEnd(e) {
-                if (!isGameRunning || isPaused) return;
-                const touchEndX = e.changedTouches[0].clientX, touchEndY = e.changedTouches[0].clientY;
-                const dx = touchEndX-touchStartX, dy = touchEndY-touchStartY;
-                if (Math.abs(dx) > Math.abs(dy)) {
-                    if (dx > 0 && direction !== 'left') nextDirection = 'right';
-                    else if (dx < 0 && direction !== 'right') nextDirection = 'left';
-                } else {
-                    if (dy > 0 && direction !== 'up') nextDirection = 'down';
-                    else if (dy < 0 && direction !== 'down') nextDirection = 'up';
+            
+            function gameOver() {
+                gameRunning = false;
+                clearInterval(gameLoop);
+                if (score > highScore) {
+                    highScore = score;
+                    localStorage.setItem('snakeHighScore', highScore);
+                    highScoreDisplay.textContent = highScore;
                 }
+                finalScoreDisplay.textContent = score;
+                gameOverScreen.classList.remove('hidden');
             }
-            startBtn.onclick = startGame;
-            pauseBtn.onclick = pauseGame;
-            restartBtn.onclick = initGame;
-            playAgainBtn.onclick = () => {
-                gameOverModal.classList.remove('active');
-                initGame();
-                startGame();
-            };
-            window.addEventListener('keydown', handleKeyDown);
-            window.addEventListener('touchstart', handleTouchStart);
-            window.addEventListener('touchend', handleTouchEnd);
-            window.addEventListener('resize', () => {
-                canvasSize = Math.min(600, window.innerWidth - 40, window.innerHeight - 220);
-                canvas.width = canvasSize; canvas.height = canvasSize; render();
-            });
-            initGame();
-        }
-        // --- Keep your existing Yes/No and Car Game initialization code unchanged ---
-        showScreen('home');
+        });
     </script>
 </body>
 </html>

@@ -16,38 +16,40 @@
       max-width: 600px;
       margin: auto;
     }
-#chat {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5em;
-}
-
-.user, .bot {
-  max-width: 80%;
-  padding: 0.6em;
-  border-radius: 1em;
-  word-wrap: break-word;
-}
-
-.user {
-  align-self: flex-end;
-  background: #e3f2fd;
-}
-
-.bot {
-  align-self: flex-start;
-  background: #e8f5e9;
-}
-
-.bot::before {
-  content: "🤖 ";
-  margin-right: 0.3em;
-}
-.user::before {
-  content: "🧑 ";
-  margin-right: 0.3em;
-}
-    
+    #chat {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5em;
+      border: 2px solid #ccc;
+      padding: 1em;
+      height: 400px;
+      overflow-y: auto;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    .user, .bot {
+      max-width: 80%;
+      padding: 0.6em;
+      border-radius: 1em;
+      word-wrap: break-word;
+    }
+    .user {
+      align-self: flex-end;
+      background: #e3f2fd;
+    }
+    .bot {
+      align-self: flex-start;
+      background: #e8f5e9;
+    }
+    .bot::before {
+      content: "🤖 ";
+      margin-right: 0.3em;
+    }
+    .user::before {
+      content: "🧑 ";
+      margin-right: 0.3em;
+    }
     #input {
       width: 70%;
       padding: 0.6em;
@@ -66,15 +68,33 @@
     button:hover {
       background: #1565c0;
     }
+    /* DARK MODE STYLES */
+    body.dark {
+      background: #121212;
+      color: #e0e0e0;
+    }
+    body.dark #chat {
+      background: #1e1e1e;
+      border-color: #444;
+    }
+    body.dark .user {
+      background: #263238;
+    }
+    body.dark .bot {
+      background: #2e7d32;
+    }
   </style>
 </head>
 <body>
   <div id="container">
     <h1>🤖 Fun AI Game Bot</h1>
+    <button onclick="toggleDarkMode()">🌙 Toggle Dark Mode</button>
     <div id="chat"></div>
     <input id="input" placeholder="Type here…" autofocus />
     <button onclick="send()">Send</button>
   </div>
+
+  <audio id="ping" src="https://assets.mixkit.co/sfx/preview/mixkit-confirmation-tone-2867.mp3" preload="auto"></audio>
 
   <script>
     const bot = new RiveScript();
@@ -83,7 +103,7 @@
     function append(who, text) {
       const div = document.createElement("div");
       div.className = who;
-      div.textContent = (who === "user" ? "You: " : "Bot: ") + text;
+      div.innerHTML = (who === "user" ? "You: " : "Bot: ") + text;
       document.getElementById("chat").appendChild(div);
       document.getElementById("chat").scrollTop = chat.scrollHeight;
     }
@@ -96,21 +116,31 @@
 
       const botDiv = document.createElement("div");
       botDiv.className = "bot";
-      botDiv.textContent = "Bot: ";
+      botDiv.innerHTML = "Bot: ";
       document.getElementById("chat").appendChild(botDiv);
 
       bot.reply("user", msg).then(reply => {
         let i = 0;
         const interval = setInterval(() => {
           if (i < reply.length) {
-            botDiv.textContent += reply[i++];
+            botDiv.innerHTML += reply[i++];
             chat.scrollTop = chat.scrollHeight;
           } else {
             clearInterval(interval);
+            document.getElementById("ping").play(); // Play sound when reply finishes
           }
         }, 30);
       });
     }
+
+    function toggleDarkMode() {
+      document.body.classList.toggle("dark");
+    }
+
+    // Optional: Press Enter to send
+    document.getElementById('input').addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') send();
+    });
   </script>
 </body>
 </html>

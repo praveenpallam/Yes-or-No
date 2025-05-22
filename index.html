@@ -4,51 +4,50 @@
   <meta charset="utf-8">
   <title>Fun AI Game Bot</title>
   <script src="https://unpkg.com/rivescript@2.2.0/dist/rivescript.min.js"></script>
- <style>
-  body {
-    font-family: 'Segoe UI', sans-serif;
-    background: linear-gradient(to right, #e0f7fa, #fce4ec);
-    margin: 0;
-    padding: 2em;
-  }
-  #chat {
-    border: 2px solid #ccc;
-    padding: 1em;
-    height: 400px;
-    overflow-y: auto;
-    background: white;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-  }
-  .user {
-    color: #1e88e5;
-    margin: 0.2em 0;
-    font-weight: bold;
-  }
-  .bot {
-    color: #43a047;
-    margin: 0.2em 0;
-    font-weight: bold;
-  }
-  #input {
-    width: 70%;
-    padding: 0.6em;
-    border: 1px solid #aaa;
-    border-radius: 4px;
-  }
-  button {
-    padding: 0.6em 1em;
-    background: #1e88e5;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-  button:hover {
-    background: #1565c0;
-  }
-</style>
-
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, #e0f7fa, #fce4ec);
+      margin: 0;
+      padding: 2em;
+    }
+    #chat {
+      border: 2px solid #ccc;
+      padding: 1em;
+      height: 400px;
+      overflow-y: auto;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    .user {
+      color: #1e88e5;
+      margin: 0.2em 0;
+      font-weight: bold;
+    }
+    .bot {
+      color: #43a047;
+      margin: 0.2em 0;
+      font-weight: bold;
+    }
+    #input {
+      width: 70%;
+      padding: 0.6em;
+      border: 1px solid #aaa;
+      border-radius: 4px;
+    }
+    button {
+      padding: 0.6em 1em;
+      background: #1e88e5;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #1565c0;
+    }
+  </style>
 </head>
 <body>
   <h1>Fun AI Game Bot</h1>
@@ -73,7 +72,19 @@
       if (!msg) return;
       append("user", msg);
       input.value = "";
-      bot.reply("user1", msg).then(reply => append("bot", reply));
+      bot.reply("user1", msg).then(reply => {
+        append("bot", ""); // Add placeholder for the bot message
+        let i = 0;
+        let typed = "";
+        const interval = setInterval(() => {
+          typed += reply[i];
+          if (i++ < reply.length) {
+            document.querySelector("#chat").lastChild.textContent = "Bot: " + typed;
+          } else {
+            clearInterval(interval);
+          }
+        }, 30);
+      });
     }
   </script>
 </body>

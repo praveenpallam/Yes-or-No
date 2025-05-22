@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>FunBot AI Chat</title>
+  <title>FunBot AI Chat + Celebrity Guess Game</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <script src="https://unpkg.com/rivescript@2.2.0/dist/rivescript.min.js"></script>
   <style>
@@ -95,7 +95,7 @@
       border: none;
       border-radius: 8px;
       cursor: pointer;
-      font-size: 16px; /* Match input font size */
+      font-size: 16px;
       user-select: none;
       transition: background-color 0.3s ease;
     }
@@ -118,7 +118,7 @@
 </head>
 <body>
   <div id="container">
-    <h1>🤖 FunBot AI Chat</h1>
+    <h1>🤖 FunBot AI Chat + Celebrity Guess Game</h1>
     <div id="chat"></div>
 
     <div id="controls">
@@ -131,12 +131,78 @@
   <audio id="ping" src="https://assets.mixkit.co/sfx/preview/mixkit-confirmation-tone-2867.mp3" preload="auto"></audio>
 
   <script>
-    const bot = new RiveScript();
-    bot.loadFile("brain.rive").then(() => bot.sortReplies());
-
     const chat = document.getElementById("chat");
     const input = document.getElementById("input");
+    const pingAudio = document.getElementById("ping");
 
+    // For the chatbot responses (simple fallback)
+    const botReplies = {
+      default: "Sorry, I didn't understand that. Try typing 'play game' to start the celebrity guessing game!",
+      greetings: "Hello! Type 'play game' to play the Indian celebrity guessing game.",
+    };
+
+    // Celebrity Guess Game data
+    const celebrities = [
+      {
+        name: "Shah Rukh Khan",
+        questions: [
+          "Is this person a male actor?",
+          "Is this person known as the King of Bollywood?",
+          "Has he acted in 'Dilwale Dulhania Le Jayenge'?",
+          "Is he also a film producer?",
+          "Is his name Shah Rukh Khan?",
+        ],
+      },
+      {
+        name: "Deepika Padukone",
+        questions: [
+          "Is this person a female actor?",
+          "Has she acted in 'Padmaavat'?",
+          "Is she known for 'Chennai Express'?",
+          "Is she a former badminton player?",
+          "Is her name Deepika Padukone?",
+        ],
+      },
+      {
+        name: "Rajinikanth",
+        questions: [
+          "Is this person a male actor?",
+          "Is he a superstar in Tamil cinema?",
+          "Does he have a unique style of walking?",
+          "Has he acted in 'Sivaji'?",
+          "Is his name Rajinikanth?",
+        ],
+      },
+      {
+        name: "Priyanka Chopra",
+        questions: [
+          "Is this person a female actor?",
+          "Has she won the Miss World pageant?",
+          "Has she worked in Hollywood movies?",
+          "Is she a singer as well?",
+          "Is her name Priyanka Chopra?",
+        ],
+      },
+      {
+        name: "Prabhas",
+        questions: [
+          "Is this person a male actor?",
+          "Is he famous for the movie Baahubali?",
+          "Is he primarily from Telugu cinema?",
+          "Has he acted in 'Saaho'?",
+          "Is his name Prabhas?",
+        ],
+      }
+    ];
+
+    let gameState = {
+      playing: false,
+      celebrity: null,
+      questionIndex: 0,
+      expectingYesNo: false,
+    };
+
+    // Append message with typing effect
     function append(role, text) {
       const msg = document.createElement("div");
       msg.className = role;
@@ -148,8 +214,9 @@
           chat.scrollTop = chat.scrollHeight;
         } else {
           clearInterval(typing);
+          pingAudio.play();
         }
-      }, 20);
+      }, 15);
     }
 
     function send() {
@@ -159,10 +226,55 @@
       input.value = "";
       input.focus();
 
-      bot.reply("user", msg).then(reply => {
-        document.getElementById("ping").play();
-        append("bot", reply);
-      });
+      if (gameState.playing) {
+        handleGameResponse(msg.toLowerCase());
+      } else {
+        handleChatbot(msg.toLowerCase());
+      }
+    }
+
+    // Handle chatbot normal conversation
+    function handleChatbot(msg) {
+      if (msg === "play game") {
+        startGame();
+      } else if (msg === "hello" || msg === "hi") {
+        append("bot", botReplies.greetings);
+      } else {
+        append("bot", botReplies.default);
+      }
+    }
+
+    // Start the guessing game
+    function startGame() {
+      gameState.playing = true;
+      gameState.questionIndex = 0;
+      gameState.celebrity = celebrities[Math.floor(Math.random() * celebrities.length)];
+      gameState.expectingYesNo = true;
+      append("bot", `Let's play! I will try to guess an Indian celebrity by asking yes/no questions. You can type 'exit' anytime to quit.\n\nQuestion 1: ${gameState.celebrity.questions[0]}`);
+    }
+
+    // Handle user's yes/no answers during game
+    function handleGameResponse(msg) {
+      if (msg === "exit") {
+        append("bot", "Game exited. Type 'play game' if you want to play again.");
+        gameState.playing = false;
+        return;
+      }
+
+      if (msg !== "yes" && msg !== "no") {
+        append("bot", "Please answer with 'yes' or 'no'.");
+        return;
+      }
+
+      // Move to next question or guess based on answer count
+      gameState.questionIndex++;
+
+      if (gameState.questionIndex < gameState.celebrity.questions.length) {
+        append("bot", `Question ${gameState.questionIndex + 1}: ${gameState.celebrity.questions[gameState.questionIndex]}`);
+      } else {
+        append("bot", `I guess the celebrity is... ${gameState.celebrity.name}! 🎉\n\nType 'play game' to play again or ask me anything else.`);
+        gameState.playing = false;
+      }
     }
 
     function toggleDarkMode() {
@@ -172,6 +284,9 @@
     input.addEventListener("keydown", e => {
       if (e.key === "Enter") send();
     });
+
+    // Start with greeting
+    append("bot", botReplies.greetings);
   </script>
 </body>
 </html>

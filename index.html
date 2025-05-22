@@ -16,25 +16,38 @@
       max-width: 600px;
       margin: auto;
     }
-    #chat {
-      border: 2px solid #ccc;
-      padding: 1em;
-      height: 400px;
-      overflow-y: auto;
-      background: white;
-      border-radius: 8px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    }
-    .user {
-      color: #1e88e5;
-      margin: 0.2em 0;
-      font-weight: bold;
-    }
-    .bot {
-      color: #43a047;
-      margin: 0.2em 0;
-      font-weight: bold;
-    }
+#chat {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5em;
+}
+
+.user, .bot {
+  max-width: 80%;
+  padding: 0.6em;
+  border-radius: 1em;
+  word-wrap: break-word;
+}
+
+.user {
+  align-self: flex-end;
+  background: #e3f2fd;
+}
+
+.bot {
+  align-self: flex-start;
+  background: #e8f5e9;
+}
+
+.bot::before {
+  content: "🤖 ";
+  margin-right: 0.3em;
+}
+.user::before {
+  content: "🧑 ";
+  margin-right: 0.3em;
+}
+    
     #input {
       width: 70%;
       padding: 0.6em;

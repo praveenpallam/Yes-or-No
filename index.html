@@ -70,10 +70,8 @@
 </div>
 
 <script>
-  // IMPORTANT: Never expose your real Hugging Face token in frontend code for production!
-  // Use a backend to proxy requests and keep your token secret.
-  const HF_API_TOKEN = "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"; // TODO: Replace safely in production!
-  const HF_MODEL = "google/flan-t5-small";
+  // Your backend endpoint
+  const BACKEND_URL = "https://b908c825-257a-46a0-9180-eca8a2395603-00-2cdqr5vnxycpd.spock.replit.dev/chat";
 
   const messages = document.getElementById("messages");
   const input = document.getElementById("input");
@@ -108,13 +106,10 @@
     sendBtn.textContent = "Sending...";
 
     try {
-      const response = await fetch(`https://api-inference.huggingface.co/models/${HF_MODEL}`, {
+      const response = await fetch(BACKEND_URL, {
         method: "POST",
-        headers: {
-          "Authorization": `Bearer ${HF_API_TOKEN}`,
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ inputs: userMessage })
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ input: userMessage })
       });
 
       const data = await response.json();
@@ -122,30 +117,5 @@
       // Remove "Typing..." message
       messages.lastChild.remove();
 
-      if (Array.isArray(data) && data[0]?.generated_text) {
-        appendMessage("bot", data[0].generated_text);
-      } else if (data.error) {
-        appendError(`Error: ${data.error}`);
-      } else {
-        appendError("Sorry, I didn't get that.");
-      }
-    } catch (err) {
-      // Remove "Typing..." message
-      messages.lastChild.remove();
-      appendError("Network error. Please try again.");
-    } finally {
-      sendBtn.disabled = false;
-      sendBtn.textContent = "Send";
-    }
-  }
-
-  input.addEventListener("keydown", e => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      send();
-    }
-  });
-</script>
-
-</body>
-</html>
+      if
+
